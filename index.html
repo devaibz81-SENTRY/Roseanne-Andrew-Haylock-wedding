@@ -288,7 +288,7 @@
   <div class="prelude__bg" id="preludeBg"></div>
   <div class="eyebrow center" id="preludeEyebrow" style="opacity:0;transform:translateY(10px)">A fifteen-year love story</div>
   <h1 id="heroPrelude" data-split>Rosanne <span class="amp">&</span> Andrew</h1>
-  <p id="preludeSub" class="prelude__sub"><span id="frameCountSub">24</span> frames, noir — scroll to spin through them.<br>Black, gold, blur — like a reel finding focus. <span style="opacity:.6;font-size:13px">Chad CSM clean · 1800px · webp</span></p>
+  <p id="preludeSub" class="prelude__sub" style="display:none"></p>
   <div class="prelude__meta" id="preludeMeta"><span>San Ignacio, Belize</span><span>04.07.2026</span></div>
   <div class="scroll-hint" id="scrollHint"><span>Scroll to spin</span><div class="scroll-hint__line"></div></div>
 </section>
@@ -311,7 +311,7 @@
 
 <section class="carousel-section" id="carousel">
   <div class="carousel-sticky">
-    <div class="carousel-bar">
+    <div class="carousel-bar" style="display:none">
       <div>
         <div class="eyebrow on-dark" style="font-size:10px;letter-spacing:.20em">Act I — <span id="barCount">24</span> frames · Noir carousel · Chad CSM clean</div>
         <p id="carouselCaption" style="color:rgba(255,251,245,.55)">01 / 24</p>
@@ -331,7 +331,7 @@
 <section class="act-hero" id="celebration">
   <div class="act-hero__bg" id="heroBg"></div>
   <div class="act-hero__inner">
-    <div class="eyebrow" id="heroEyebrow" style="opacity:0;transform:translateY(10px)">You’ve reached the clearing</div>
+    <div class="eyebrow" id="heroEyebrow" style="display:none"></div>
     <div class="hero-names" id="heroNames" data-split>Rosanne <span class="amp">&</span> <i>Andrew</i></div>
     <div class="hero-huge-date" id="heroHugeDate"><span data-split>04<i>.</i>07<i>.</i>2026</span><em>July 4th — San Ignacio, Belize · 2:00 PM</em></div>
     <div class="hero-ornament" id="heroOrnament"><i></i><b></b><i></i></div>
@@ -344,7 +344,7 @@
   <div class="act-videos__head" id="videosHead">
     <div class="eyebrow center">The films · Oasis</div>
     <h2>The day, <i>remembered</i></h2>
-    <p>Two still pools after the noir reel — press play and they ripple.</p>
+    <p style="display:none"></p>
   </div>
   <div class="video-grid">
     <!-- CHAD CSM CLEAN: thumbnails are pure 16:9, no text over image — only play / coming-soon -->
@@ -513,12 +513,12 @@ function springReveal(el, {delay=0, config={damping:200}, stagger=0}={}){
 // ── build noir carousel — AUTO from photos/ folder (all images) ──
 const track=document.getElementById('carouselTrack');
 const dotsWrap=document.getElementById('carouselDots');
-// All photos — CHAD CSM CLEAN 16:9 — UPDATED 2026-09-07 to 18 selects (12 JPG + 2 vlcsnap + 4 WhatsApp)
+// All photos — CHAD CSM CLEAN 16:9 — UPDATED 2026-09-07 to 17 selects (12 JPG + 2 vlcsnap + 3 WhatsApp) — last WhatsApp removed
 // Primary: photos/clean/16x9/*.jpg (1920x1080) + .webp ; Fallback -> photos/clean/*.jpg -> photos original -> picsum
-const _cleanBases=["IMG_7759","IMG_7765","IMG_7768","IMG_7787","IMG_7795","IMG_7800","IMG_7808","IMG_7814","IMG_7826","IMG_7833","IMG_7836","IMG_7854","vlcsnap-2026-09-04-22h42m20s077","vlcsnap-2026-09-06-20h10m35s141","WhatsApp_Image_2026-09-06_at_20.06.40_1","WhatsApp_Image_2026-09-06_at_20.06.40","WhatsApp_Image_2026-09-06_at_20.06.41_1","WhatsApp_Image_2026-09-06_at_20.06.42"];
+const _cleanBases=["IMG_7759","IMG_7765","IMG_7768","IMG_7787","IMG_7795","IMG_7800","IMG_7808","IMG_7814","IMG_7826","IMG_7833","IMG_7836","IMG_7854","vlcsnap-2026-09-04-22h42m20s077","vlcsnap-2026-09-06-20h10m35s141","WhatsApp_Image_2026-09-06_at_20.06.40_1","WhatsApp_Image_2026-09-06_at_20.06.40","WhatsApp_Image_2026-09-06_at_20.06.41_1"];
 const photoFiles = _cleanBases.map(b=> `photos/clean/16x9/${b}.jpg`);
 const photoFallbacks = _cleanBases.map(b=> `photos/clean/${b}.jpg`);
-const _fallbackOrig=["photos/IMG_7759.JPG","photos/IMG_7765.JPG","photos/IMG_7768.JPG","photos/IMG_7787.JPG","photos/IMG_7795.JPG","photos/IMG_7800.JPG","photos/IMG_7808.JPG","photos/IMG_7814.JPG","photos/IMG_7826.JPG","photos/IMG_7833.JPG","photos/IMG_7836.JPG","photos/IMG_7854.JPG","photos/vlcsnap-2026-09-04-22h42m20s077.png","photos/vlcsnap-2026-09-06-20h10m35s141.png","photos/WhatsApp Image 2026-09-06 at 20.06.40 (1).png","photos/WhatsApp Image 2026-09-06 at 20.06.40.png","photos/WhatsApp Image 2026-09-06 at 20.06.41 (1).png","photos/WhatsApp Image 2026-09-06 at 20.06.42.png"];
+const _fallbackOrig=["photos/IMG_7759.JPG","photos/IMG_7765.JPG","photos/IMG_7768.JPG","photos/IMG_7787.JPG","photos/IMG_7795.JPG","photos/IMG_7800.JPG","photos/IMG_7808.JPG","photos/IMG_7814.JPG","photos/IMG_7826.JPG","photos/IMG_7833.JPG","photos/IMG_7836.JPG","photos/IMG_7854.JPG","photos/vlcsnap-2026-09-04-22h42m20s077.png","photos/vlcsnap-2026-09-06-20h10m35s141.png","photos/WhatsApp Image 2026-09-06 at 20.06.40 (1).png","photos/WhatsApp Image 2026-09-06 at 20.06.40.png","photos/WhatsApp Image 2026-09-06 at 20.06.41 (1).png"];
 const photoFallbacks2 = _fallbackOrig;
 const N = photoFiles.length;
 // dynamic section height so every photo gets scroll time — 24 -> ~436vh
