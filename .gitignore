@@ -1,0 +1,21 @@
+# Deps
+node_modules/
+remotion-wedding/node_modules/
+remotion-wedding/out/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Large originals — keep clean/ but ignore raw duplicates if needed (currently tracked)
+# Uncomment to ignore RAWs and only keep clean:
+# photos/*.JPG
+# photos/*.PNG
+# photos/*.png
+# photos/vlcsnap*.png
+# photos/WhatsApp*.png
+
+# Cache
+*.log
+.cache/

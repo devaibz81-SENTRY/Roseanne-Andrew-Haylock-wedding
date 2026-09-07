@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rosanne & Andrew — July 4th 2026 · Noir Carousel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Instrument+Sans:wght@400;500;600&family=Great+Vibes&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root{ --paper:#FFFBF5; --paper-2:#F7EFE6; --ink:#0F0F0F; --ink-2:#141414; --ink-soft:#3A3E3B; --line:#E9E0D3; --line-dark:rgba(255,255,255,.08); --sage:#8FA89A; --sage-dark:#5C7366; --gold:#C9A46A; --gold-2:#B8935A; --radius:22px; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--ink);color:var(--paper);font-family:'Instrument Sans',system-ui,-apple-system,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .progress{position:fixed;top:0;left:0;height:2px;width:100%;z-index:100;background:rgba(26,28,27,0.06);pointer-events:none}
+  .progress__bar{height:100%;width:0%;background:var(--gold);transition:width .08s linear}
+  .nav-dots{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:50;display:flex;flex-direction:column;gap:14px;align-items:center}
+  .nav-dots a{width:7px;height:7px;border-radius:50%;background:rgba(26,28,27,0.18);display:block;transition:.4s cubic-bezier(.2,.8,.2,1);border:1px solid rgba(26,28,27,0.08);position:relative}
+  .nav-dots a.active{background:var(--gold);width:7px;height:22px;border-radius:10px;box-shadow:0 2px 10px rgba(201,164,106,.4)}
+  .nav-dots a::after{content:attr(data-label);position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:10px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;background:var(--ink);color:var(--paper);padding:5px 8px;border-radius:6px;opacity:0;pointer-events:none;transition:.2s}
+  .nav-dots a:hover::after{opacity:1;transform:translateY(-50%) translateX(-4px)}
+  @media(max-width:760px){.nav-dots{display:none}}
+  .topbar{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(14px);z-index:40;background:rgba(255,251,245,0.82);backdrop-filter:blur(16px) saturate(1.2);border:1px solid rgba(233,224,211,.9);border-radius:999px;padding:8px 14px 8px 18px;display:flex;align-items:center;gap:18px;box-shadow:0 8px 30px rgba(26,28,27,.06);opacity:0; will-change:transform,opacity}
+  .topbar__names{font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:500}
+  .topbar__names em{font-family:'Great Vibes',cursive;letter-spacing:0;text-transform:none;font-size:18px;font-weight:400;color:var(--gold-2);margin:0 2px}
+  .topbar__dot{width:3px;height:3px;border-radius:50%;background:var(--gold)}
+  .topbar__date{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.6}
+  .topbar__cta{background:var(--ink);color:var(--paper);border-radius:999px;padding:7px 14px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;transition:.25s}
+  .topbar__cta:hover{background:#000;transform:translateY(-1px)}
+  @media(max-width:640px){.topbar{top:12px;padding:7px 10px 7px 14px;gap:10px}.topbar__date{display:none}}
+  .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,251,245,.62);font-weight:600;display:flex;align-items:center;gap:10px}
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--gold);opacity:.8}
+  .eyebrow.center{justify-content:center}.eyebrow.center::before{display:none}
+  .eyebrow.center::after{content:"";width:22px;height:1px;background:var(--gold);opacity:.8}
+  .eyebrow.on-dark{color:var(--gold);opacity:.95}
+  .eyebrow.on-dark::before,.eyebrow.on-dark::after{background:var(--gold);opacity:.5}
+  .prelude{min-height:86vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 56px;position:relative;overflow:hidden;background:var(--ink);border-bottom:1px solid rgba(255,255,255,.06)}
+  .prelude__bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(700px 400px at 50% 0%, rgba(201,164,106,.10), transparent 70%), radial-gradient(900px 600px at 80% 92%, rgba(143,168,154,.06), transparent 70%);will-change:transform}
+  .prelude h1{font-family:'Great Vibes',cursive;font-weight:400;line-height:1.28;letter-spacing:0;font-size:clamp(52px, 10vw, 116px);color:var(--paper);overflow:visible;padding:.18em .32em .22em .12em;margin:0 -.16em;text-align:center}
+  .prelude h1 .amp{font-family:'Great Vibes',cursive;font-weight:400;font-size:.92em;color:var(--gold);margin:0 .10em}
+  .char{display:inline-block;will-change:transform,opacity;transform:translateY(110%) rotate(2deg);opacity:0;line-height:1.15;padding:.14em 0}
+  .char.space{width:.26em}
+  .word{overflow:hidden;display:inline-block;vertical-align:baseline;padding:.22em .26em .30em;margin:-.22em -.26em -.30em}
+  .prelude__sub{margin-top:16px;max-width:520px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;line-height:1.6;color:rgba(255,251,245,.62);opacity:0;transform:translateY(10px)}
+  .prelude__meta{margin-top:24px;display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:center;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,251,245,.48);opacity:0;transform:translateY(10px)}
+  .prelude__meta span{display:flex;align-items:center;gap:18px}
+  .prelude__meta span::after{content:"•";opacity:.3}
+  .prelude__meta span:last-child::after{display:none}
+  .scroll-hint{margin-top:36px;display:flex;flex-direction:column;align-items:center;gap:12px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,251,245,.48);opacity:0;transform:translateY(8px)}
+  .scroll-hint__line{width:1px;height:44px;background:linear-gradient(to bottom, var(--paper) 0%, transparent 100%);opacity:.22;position:relative;overflow:hidden}
+  .scroll-hint__line::after{content:"";position:absolute;top:0;left:0;width:100%;height:16px;background:var(--gold);animation:drop 1.6s ease-in-out infinite}
+  @keyframes drop{0%{transform:translateY(-16px);opacity:0}30%{opacity:1}100%{transform:translateY(44px);opacity:0}}
+
+  /* ── KEN BURNS INTRO — slow stills, fade ── */
+  .kenburns{position:relative;height:100vh;height:100dvh;background:var(--ink);overflow:hidden;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center}
+  .kenburns__stage{position:absolute;inset:0;overflow:hidden}
+  .kenburns__slide{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease;will-change:opacity,transform}
+  .kenburns__slide.is-active{opacity:1}
+  .kenburns__slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform-origin:center center;will-change:transform}
+  .kenburns__slide.is-active img{animation:kenBurns 7s ease-in-out forwards}
+  @keyframes kenBurns{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.08) translate(-1.2%, -1%)}}
+  .kenburns__slide:nth-child(even).is-active img{animation:kenBurnsAlt 7s ease-in-out forwards}
+  @keyframes kenBurnsAlt{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.08) translate(1.2%, -0.8%)}}
+  .kenburns__scrim{position:absolute;inset:0;background:linear-gradient(to bottom, rgba(15,15,15,.18) 0%, transparent 30%, transparent 68%, rgba(15,15,15,.62) 100%), radial-gradient(900px 600px at 50% 50%, transparent 60%, rgba(15,15,15,.38) 100%);pointer-events:none;z-index:1}
+  .kenburns__label{position:absolute;top:28px;left:32px;z-index:2;display:flex;align-items:center;gap:10;font-size:10px;letter-spacing:.20em;text-transform:uppercase;color:rgba(255,251,245,.62);font-family:'IBM Plex Mono',monospace}
+  .kenburns__label i{width:22px;height:1px;background:var(--gold);opacity:.7;display:block}
+  .kenburns__caption{position:absolute;bottom:0;left:0;right:0;z-index:2;padding:28px 32px;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;color:var(--paper)}
+  .kenburns__caption h3{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;line-height:.95}
+  .kenburns__caption h3 i{font-style:italic;color:var(--gold)}
+  .kenburns__caption p{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.62;margin-top:8px;font-family:'IBM Plex Mono',monospace}
+  .kenburns__dots{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:2;display:flex;gap:6px;align-items:center;background:rgba(255,255,255,.08);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.10);padding:8px 10px;border-radius:999px}
+  .kenburns__dots button{width:6px;height:6px;border-radius:50%;border:0;background:rgba(255,251,245,.32);cursor:pointer;transition:.35s;padding:0}
+  .kenburns__dots button.is-active{width:18px;background:var(--gold)}
+  .kenburns__hint{position:absolute;right:32px;bottom:28px;z-index:2;background:rgba(255,251,245,.92);color:var(--ink);border-radius:999px;padding:7px 12px;font-size:11px;letter-spacing:.06em;display:flex;gap:8px;align-items:center;border:1px solid rgba(233,224,211,.9)}
+  .kenburns__hint i{width:18px;height:18px;border-radius:50%;background:var(--gold);display:grid;place-items:center;color:var(--ink);font-style:normal;font-size:10px;font-weight:700}
+  @media(max-width:760px){
+    .kenburns{height:100vh;height:100dvh}
+    .kenburns__stage{inset:0}
+    .kenburns__caption{padding:18px 16px 20px;flex-direction:column;align-items:flex-start;gap:8px}
+    .kenburns__caption h3{font-size:26px}
+    .kenburns__dots{bottom:16px;padding:6px 8px}
+    .kenburns__hint{display:none}
+    .kenburns__label{top:16px;left:16px;font-size:9px}
+  }
+  @media(max-width:480px){
+    .kenburns__caption h3{font-size:22px}
+    .kenburns__caption p{font-size:10px}
+  }
+
+  /* ── BLACK ELEGANT 3D CAROUSEL ── */
+  .carousel-section{position:relative;height:260vh;background:var(--ink);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);overflow:clip}
+  .carousel-sticky{position:sticky;top:0;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:
+      radial-gradient(1100px 700px at 50% 0%, rgba(201,164,106,.07), transparent 70%),
+      radial-gradient(900px 600px at 12% 20%, rgba(143,168,154,.05), transparent 60%),
+      radial-gradient(700px 500px at 88% 85%, rgba(201,164,106,.04), transparent 70%),
+      linear-gradient(to bottom, #0F0F0F 0%, #111111 100%)
+  }
+  .carousel-bar{padding:22px 32px 0;display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-shrink:0}
+  .carousel-bar h2{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,251,245,.72)}
+  .carousel-bar h2 i{font-style:normal;color:var(--gold)}
+  .carousel-bar p{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,251,245,.42);margin-top:6px;font-family:'IBM Plex Mono',monospace}
+  .carousel-counter{text-align:right;font-variant-numeric:tabular-nums;color:var(--paper)}
+  .carousel-counter strong{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:200;line-height:1;letter-spacing:-.03em}
+  .carousel-counter span{font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.45;font-family:'IBM Plex Mono',monospace}
+  .carousel-progress{height:1px;background:rgba(255,255,255,.08);margin:16px 32px 0;position:relative;overflow:hidden;flex-shrink:0}
+  .carousel-progress i{position:absolute;left:0;top:0;height:100%;width:0%;background:linear-gradient(90deg, var(--sage), var(--gold));box-shadow:0 0 10px rgba(201,164,106,.35)}
+  .carousel-progress b{position:absolute;top:50%;transform:translateY(-50%);width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px rgba(201,164,106,.9);opacity:0}
+  .carousel-viewport{
+    flex:1;overflow:hidden;position:relative;display:flex;align-items:center;
+    padding:22px 0 28px;
+    perspective:1400px; perspective-origin:50% 52%;
+  }
+  .carousel-viewport::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(to right, #0F0F0F 0%, transparent 10%, transparent 90%, #0F0F0F 100%),
+               linear-gradient(to bottom, transparent 70%, rgba(15,15,15,.55) 100%);
+    z-index:3;
+  }
+  .carousel-track{
+    display:flex;gap:28px;will-change:transform;padding:0 32px;align-items:center;
+    transform-style:preserve-3d;
+  }
+  /* PURE PHOTO — 16:9 cinematic — 200% scaled with overlap */
+  .carousel-card{
+    flex:0 0 680px; width:680px; aspect-ratio:16/9; height:auto;
+    /* will be overridden by JS widths but keep as fallback */
+    border-radius:16px;overflow:hidden;background:#0A0A0A;
+    border:0;
+    box-shadow:0 28px 80px rgba(0,0,0,.62);
+    will-change:transform,filter,opacity;
+    transform-origin:center center;
+    transform-style:preserve-3d;
+    position:relative;
+  }
+  .carousel-card.is-vertical{flex:0 0 380px !important;width:380px !important;aspect-ratio:4/5;max-height:72vh}
+  .carousel-card.is-square{flex:0 0 420px !important;width:420px !important;aspect-ratio:1/1;max-height:72vh}
+  @media(max-width:760px){
+    .carousel-card.is-vertical{flex:0 0 68vw !important;width:68vw !important;max-height:62vh}
+    .carousel-card.is-square{flex:0 0 72vw !important;width:72vw !important}
+  }
+  .carousel-media{position:absolute;inset:0;overflow:hidden;background:#0F0F0F}
+  .carousel-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform,filter}
+  .carousel-card.is-vertical .carousel-media img{object-fit:cover;object-position:center top}
+  .carousel-card.is-square .carousel-media img{object-fit:cover}
+  .carousel-media::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(to bottom, transparent 68%, rgba(0,0,0,.18) 100%);
+    pointer-events:none;opacity:.55;
+  }
+  /* keep is-active hook for JS — no visual border, just scale already handled */
+  .carousel-card.is-active{ }
+  .carousel-dots{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);display:flex;gap:6px;align-items:center;background:rgba(255,255,255,.08);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.10);padding:8px 10px;border-radius:999px;z-index:4}
+  .carousel-dots button{width:6px;height:6px;border-radius:50%;border:0;background:rgba(255,251,245,.28);cursor:pointer;transition:.35s;padding:0}
+  .carousel-dots button.active{width:18px;background:var(--gold);box-shadow:0 2px 10px rgba(201,164,106,.45)}
+  .carousel-hint{position:absolute;right:32px;bottom:16px;background:rgba(255,251,245,.92);color:var(--ink);border-radius:999px;padding:7px 12px;font-size:11px;letter-spacing:.06em;display:flex;gap:8px;align-items:center;z-index:4;border:1px solid rgba(233,224,211,.9);box-shadow:0 8px 24px rgba(0,0,0,.18)}
+  .carousel-hint i{width:18px;height:18px;border-radius:50%;background:var(--gold);display:grid;place-items:center;color:var(--ink);font-style:normal;font-size:10px;font-weight:700}
+  #carouselDebug{position:absolute;left:32px;bottom:16px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,251,245,.55);font-family:'IBM Plex Mono',monospace;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);padding:7px 10px;border-radius:999px;z-index:4;backdrop-filter:blur(8px)}
+  @media(max-width:760px){
+    .carousel-section{height:340vh}
+    .carousel-card{flex:0 0 84vw !important;width:84vw !important;aspect-ratio:16/9;height:auto;border-radius:14px}
+    .carousel-track{padding:0 12px;gap:12px}
+    .carousel-bar{padding:14px 16px 0;flex-direction:column;align-items:flex-start;gap:8px}
+    .carousel-bar h2{font-size:10px}
+    .carousel-counter strong{font-size:32px}
+    .carousel-progress{margin:10px 16px 0}
+    .carousel-dots{bottom:10px;padding:6px 8px}
+    .carousel-dots button{width:5px;height:5px}
+    .carousel-hint{right:12px;bottom:10px;font-size:10px;padding:6px 10px}
+    #carouselDebug{display:none}
+    .carousel-viewport{perspective:850px;padding:12px 0 20px}
+    .carousel-viewport::before{background:linear-gradient(to right, #0F0F0F 0%, transparent 6%, transparent 94%, #0F0F0F 100%)}
+  }
+  @media(max-width:480px){
+    .carousel-card{flex:0 0 88vw !important;width:88vw !important}
+    .carousel-viewport{perspective:650px}
+    .topbar{top:10px;padding:6px 10px 6px 12px;gap:8px}
+    .topbar__names{font-size:12px}
+    .topbar__cta{padding:6px 12px;font-size:10px}
+    .prelude h1{font-size:clamp(44px, 12vw, 72px)}
+    .hero-names{font-size:clamp(40px, 11vw, 64px)}
+    .hero-huge-date{font-size:clamp(56px, 18vw, 110px)}
+  }
+  @media(hover:none) and (pointer:coarse){
+    .carousel-hint{display:none}
+    .carousel-viewport{padding:8px 0 16px}
+  }
+
+  .act-hero{position:relative;padding:96px 24px 76px;overflow:hidden;background:var(--ink);color:var(--paper);text-align:center;border-top:1px solid rgba(255,255,255,.06)}
+  .act-hero__bg{position:absolute;inset:0;opacity:.18;background:radial-gradient(700px 500px at 20% 20%, rgba(201,164,106,.45), transparent 60%), radial-gradient(600px 400px at 85% 80%, rgba(143,168,154,.38), transparent 60%), linear-gradient(to bottom, transparent, rgba(0,0,0,.35));will-change:transform}
+  .act-hero__inner{position:relative;max-width:900px;margin:0 auto;padding:0 8px}
+  .act-hero .eyebrow{color:var(--gold);justify-content:center}
+  .act-hero .eyebrow::before,.act-hero .eyebrow::after{background:rgba(201,164,106,.6)}
+  .hero-names{margin-top:6px;font-family:'Great Vibes',cursive;font-weight:400;font-size:clamp(48px, 9vw, 106px);line-height:1.25;overflow:visible;padding:.18em .32em .22em .10em;margin:0 -.16em;text-align:center;white-space:normal}
+  .hero-names i{font-style:normal;color:var(--paper)}
+  .hero-names .amp{font-family:'Great Vibes',cursive;color:var(--gold);font-size:.92em;margin:0 .14em}
+  .hero-huge-date{margin-top:10px;font-family:'Cormorant Garamond',serif;font-weight:300;letter-spacing:-.05em;line-height:.85;font-size:clamp(72px, 15vw, 168px);color:var(--paper);display:flex;flex-direction:column;align-items:center;gap:0;opacity:0;transform:translateY(18px) scale(.97)}
+  .hero-huge-date span{display:flex;align-items:baseline;gap:.10em}
+  .hero-huge-date i{font-style:normal;color:var(--gold)}
+  .hero-huge-date em{display:block;text-align:center;font-family:'Instrument Sans',sans-serif;font-style:normal;font-size:11px;letter-spacing:.28em;text-transform:uppercase;opacity:.55;margin-top:16px;font-weight:500;line-height:1.4}
+  .hero-ornament{margin-top:36px;opacity:0;display:flex;justify-content:center;align-items:center;gap:12px;transform:scale(.9)}
+  .hero-ornament i{width:42px;height:1px;background:linear-gradient(to right, transparent, var(--gold))}
+  .hero-ornament i:last-child{background:linear-gradient(to left, transparent, var(--gold))}
+  .hero-ornament b{width:6px;height:6px;border-radius:50%;border:1px solid var(--gold);transform:rotate(45deg)}
+  .hero-cta{margin-top:34px;display:inline-flex;align-items:center;gap:10px;background:var(--paper);color:var(--ink);border-radius:999px;padding:12px 18px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;opacity:0;transform:translateY(10px);box-shadow:0 10px 30px rgba(0,0,0,.18)}
+  .act-videos{padding:70px 24px 40px;background:var(--ink);position:relative;overflow:hidden;border-top:1px solid rgba(255,255,255,.06)}
+  .act-videos__head{max-width:1100px;margin:0 auto;text-align:center}
+  .act-videos__head h2{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(32px, 5vw, 50px);letter-spacing:-.02em;margin-top:14px;line-height:.95;color:var(--paper)}
+  .act-videos__head h2 i{font-style:italic;color:var(--gold);font-weight:300}
+  .act-videos__head > p{max-width:560px;margin:14px auto 0;font-size:14px;line-height:1.7;color:rgba(255,251,245,.62);opacity:1}
+  .act-videos__head .eyebrow, .act-videos__head h2, .act-videos__head > p{opacity:0;transform:translateY(18px)}
+  .video-grid{max-width:1100px;margin:36px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media(max-width:860px){.video-grid{grid-template-columns:1fr}}
+  .video-card{position:relative;border-radius:22px;overflow:hidden;background:#1A1A1A;border:1px solid rgba(255,255,255,.08);box-shadow:0 18px 50px rgba(0,0,0,.42);opacity:0;transform:translateY(24px) scale(.98)}
+  .video-card__media{aspect-ratio:16/9;position:relative;overflow:hidden;background:#E8E0D1;display:flex;align-items:center;justify-content:center}
+  .video-card__thumb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(500px 300px at 30% 20%, rgba(201,164,106,.22), transparent 60%), linear-gradient(135deg, #F2E9D9 0%, #E8DDC9 100%)}
+  .video-card__thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .video-card__thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom, transparent 45%, rgba(26,28,27,.42) 100%);z-index:1}
+  .thumb-label{position:absolute;top:16px;left:16px;z-index:2;background:rgba(255,251,245,.92);backdrop-filter:blur(8px);border:1px solid rgba(233,224,211,.9);border-radius:999px;padding:7px 12px;display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+  .thumb-label i{width:7px;height:7px;border-radius:50%;background:#E05A33;box-shadow:0 0 0 6px rgba(224,90,51,.12);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 6px rgba(224,90,51,.12)}50%{box-shadow:0 0 0 9px rgba(224,90,51,.08)}100%{box-shadow:0 0 0 6px rgba(224,90,51,.12)}}
+  .play-btn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.9);z-index:3;width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:rgba(255,251,245,.92);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.9);box-shadow:0 12px 30px rgba(26,28,27,.18);transition:.35s;cursor:pointer;opacity:0}
+  .video-card:hover .play-btn{transform:translate(-50%,-50%) scale(1.06);background:var(--ink);color:var(--paper);opacity:1 !important}
+  .video-card:hover .play-btn path{fill:var(--paper)}
+  .video-card__meta{position:absolute;left:16px;right:16px;bottom:16px;z-index:3;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;color:var(--paper)}
+  .video-card__meta h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;line-height:1;text-shadow:0 2px 14px rgba(0,0,0,.2)}
+  .video-card__meta h3 i{font-style:italic;font-weight:300;opacity:.9}
+  .video-card__meta p{font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.8;margin-top:4px}
+  .video-card__meta time{background:rgba(255,251,245,.14);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.18);padding:7px 10px;border-radius:999px;font-size:11px;font-weight:600}
+  .video-card__body{padding:18px;display:flex;justify-content:space-between;align-items:center;gap:12px;background:#141414;border-top:1px solid rgba(255,255,255,.06)}
+  .video-card__body h4{font-size:13px;font-weight:600;letter-spacing:.06em;color:var(--paper)}
+  .video-card__body h4 span{font-weight:400;opacity:.55;color:rgba(255,251,245,.7)}
+  .video-card__body p{font-size:12px;opacity:.55;color:rgba(255,251,245,.6);margin-top:2px}
+  .video-card__action{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.10);display:grid;place-items:center;background:rgba(255,255,255,.06);color:var(--paper);transition:.3s;flex-shrink:0}
+  .video-card__oasis-tag{position:absolute;top:16px;right:16px;z-index:2;background:rgba(26,28,27,.78);color:var(--paper);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:6px 10px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;backdrop-filter:blur(8px)}
+  .detail-grid{max-width:1100px;margin:22px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media(max-width:860px){.detail-grid{grid-template-columns:1fr}}
+  .detail{border-radius:22px;overflow:hidden;border:1px solid rgba(255,255,255,.08);background:#141414;box-shadow:0 10px 30px rgba(0,0,0,.42);opacity:0;transform:translateY(22px) scale(.98)}
+  .detail__head{padding:20px 22px 18px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:1px solid rgba(255,255,255,.06)}
+  .detail__head h3{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;letter-spacing:-.02em;line-height:1;color:var(--paper)}
+  .detail__head h3 i{font-style:italic;font-weight:400;color:var(--sage)}
+  .detail__badge{font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;background:var(--paper);color:var(--ink);padding:7px 10px;border-radius:999px}
+  .detail__badge.sage{background:var(--sage);color:white}
+  .detail__body{padding:18px 22px 20px;flex:1}
+  .detail__row{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px}
+  .detail__ico{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);display:grid;place-items:center;flex-shrink:0;color:var(--sage)}
+  .detail__row h4{font-size:13px;font-weight:600;color:var(--paper)}
+  .detail__row p{font-size:12px;opacity:.62;color:rgba(255,251,245,.7);margin-top:2px;line-height:1.5}
+  .detail__foot{padding:16px 22px;background:#0F0F0F;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .detail__foot span{font-size:12px;opacity:.55;color:rgba(255,251,245,.6)}
+  .btn{border-radius:999px;padding:10px 16px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;border:1px solid var(--paper);background:var(--paper);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:.25s}
+  .btn--ghost{background:transparent;color:var(--paper);border-color:rgba(255,255,255,.18)}
+  footer{padding:36px 24px 40px;text-align:center;border-top:1px solid rgba(255,255,255,.06);background:var(--ink)}
+  footer p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;opacity:.62;color:var(--paper)}
+  footer small{font-size:10px;letter-spacing:.18em;text-transform:uppercase;opacity:.38;color:rgba(255,251,245,.7);margin-top:8px;display:block;font-family:'IBM Plex Mono',monospace}
+  .modal{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;padding:20px}
+  .modal.open{display:flex}
+  .modal__backdrop{position:absolute;inset:0;background:rgba(16,16,15,.72);backdrop-filter:blur(10px)}
+  .modal__card{position:relative;background:var(--paper);border-radius:20px;overflow:hidden;width:min(860px, 96vw);box-shadow:0 30px 80px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.15);animation:pop .42s cubic-bezier(.2,.8,.2,1)}
+  @keyframes pop{from{transform:scale(.96) translateY(10px);opacity:0}to{transform:none;opacity:1}}
+  .modal__media{aspect-ratio:16/9.2;background:#0F0F0F;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .modal__placeholder{position:relative;text-align:center;color:rgba(255,251,245,.9)}
+  .modal__placeholder strong{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:44px;letter-spacing:-.02em;display:block}
+  .modal__placeholder span{font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.6;margin-top:6px;display:block}
+  .modal__placeholder p{margin-top:16px;font-size:13px;opacity:.6;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.6}
+  .modal__close{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;background:rgba(255,251,245,.9);border:1px solid rgba(233,224,211,.9);display:grid;place-items:center;cursor:pointer;z-index:2}
+  .modal__body{padding:18px 20px 20px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+  .modal__body h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500}
+  .modal__body p{font-size:12px;opacity:.6;margin-top:2px}
+</style>
+</head>
+<body>
+<div class="progress"><div class="progress__bar" id="progressBar"></div></div>
+<nav class="nav-dots" aria-label="Sections">
+  <a href="#journey" data-label="Journey" class="active"></a>
+  <a href="#carousel" data-label="Photos"></a>
+  <a href="#celebration" data-label="Oasis"></a>
+  <a href="#videos" data-label="Films"></a>
+</nav>
+<div class="topbar" id="topbar">
+  <div class="topbar__names">Rosanne <em>&</em> Andrew</div>
+  <div class="topbar__dot"></div>
+  <div class="topbar__date">July 4 — 2026 · Belize</div>
+  <a href="#videos" class="topbar__cta">Watch films →</a>
+</div>
+
+<section class="prelude" id="journey">
+  <div class="prelude__bg" id="preludeBg"></div>
+  <div class="eyebrow center" id="preludeEyebrow" style="opacity:0;transform:translateY(10px)">A fifteen-year love story</div>
+  <h1 id="heroPrelude" data-split>Rosanne <span class="amp">&</span> Andrew</h1>
+  <p id="preludeSub" class="prelude__sub"><span id="frameCountSub">24</span> frames, noir — scroll to spin through them.<br>Black, gold, blur — like a reel finding focus. <span style="opacity:.6;font-size:13px">Chad CSM clean · 1800px · webp</span></p>
+  <div class="prelude__meta" id="preludeMeta"><span>San Ignacio, Belize</span><span>04.07.2026</span></div>
+  <div class="scroll-hint" id="scrollHint"><span>Scroll to spin</span><div class="scroll-hint__line"></div></div>
+</section>
+
+<!-- KEN BURNS INTRO — 6 best stills, slow fade, before the interactive carousel -->
+<section class="kenburns" id="kenburns" aria-label="Opening stills">
+  <div class="kenburns__stage" id="kenburnsStage"></div>
+  <div class="kenburns__scrim"></div>
+  <div class="kenburns__label"><i></i> Opening — six frames, slow</div>
+  <div class="kenburns__caption">
+    <div>
+      <h3>Hold <i>this</i> moment</h3>
+      <p id="kenburnsCaption">01 / 06 — slow Ken Burns · fade · auto-advance</p>
+    </div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:200;line-height:1;opacity:.92"><span id="kenburnsCounter">01</span><span style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;opacity:.45;font-family:'IBM Plex Mono',monospace"> / 06</span></div>
+  </div>
+  <div class="kenburns__dots" id="kenburnsDots" aria-label="Ken Burns navigation"></div>
+  <a href="#carousel" class="kenburns__hint"><i>↓</i> Enter the reel</a>
+</section>
+
+<section class="carousel-section" id="carousel">
+  <div class="carousel-sticky">
+    <div class="carousel-bar">
+      <div>
+        <div class="eyebrow on-dark" style="font-size:10px;letter-spacing:.20em">Act I — <span id="barCount">24</span> frames · Noir carousel · Chad CSM clean</div>
+        <p id="carouselCaption" style="color:rgba(255,251,245,.55)">01 / 24</p>
+      </div>
+      <div class="carousel-counter"><strong id="photoCounter">01</strong><span>/ 10</span></div>
+    </div>
+    <div class="carousel-progress"><i id="galleryProgress"></i><b id="galleryDot"></b></div>
+    <div class="carousel-viewport" id="carouselViewport">
+      <div class="carousel-track" id="carouselTrack"></div>
+      <div class="carousel-dots" id="carouselDots" aria-label="Go to photo"></div>
+      <div id="carouselDebug">Scroll ↓ — 3D spin + Remotion blur</div>
+      <div class="carousel-hint"><i>↔</i> Scroll to spin</div>
+    </div>
+  </div>
+</section>
+
+<section class="act-hero" id="celebration">
+  <div class="act-hero__bg" id="heroBg"></div>
+  <div class="act-hero__inner">
+    <div class="eyebrow" id="heroEyebrow" style="opacity:0;transform:translateY(10px)">You’ve reached the clearing</div>
+    <div class="hero-names" id="heroNames" data-split>Rosanne <span class="amp">&</span> <i>Andrew</i></div>
+    <div class="hero-huge-date" id="heroHugeDate"><span data-split>04<i>.</i>07<i>.</i>2026</span><em>July 4th — San Ignacio, Belize · 2:00 PM</em></div>
+    <div class="hero-ornament" id="heroOrnament"><i></i><b></b><i></i></div>
+    <p id="heroQuote" style="margin:36px auto 0;max-width:600px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:18px;line-height:1.6;color:rgba(255,251,245,.74);opacity:0;transform:translateY(12px)">The reel settles — two pools remain, still and gold.<br>Press play. The night continues here.</p>
+    <a href="#videos" class="hero-cta" id="heroCta">Watch the films ↓</a>
+  </div>
+</section>
+
+<section class="act-videos" id="videos">
+  <div class="act-videos__head" id="videosHead">
+    <div class="eyebrow center">The films · Oasis</div>
+    <h2>The day, <i>remembered</i></h2>
+    <p>Two still pools after the noir reel — press play and they ripple.</p>
+  </div>
+  <div class="video-grid">
+    <!-- CHAD CSM CLEAN: thumbnails are pure 16:9, no text over image — only play / coming-soon -->
+    <article class="video-card" data-video="ceremony" id="vc1" data-youtube="1CtHdq1qA6g">
+      <div class="video-card__media">
+        <div class="video-card__thumb"><picture><source srcset="https://i.ytimg.com/vi/1CtHdq1qA6g/maxresdefault.jpg" type="image/jpeg"><img id="thumbCeremony" alt="Wedding Ceremony — Rose & Passy" src="https://i.ytimg.com/vi/1CtHdq1qA6g/maxresdefault.jpg" loading="lazy" onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/1CtHdq1qA6g/hqdefault.jpg'; this.onerror=function(){this.onerror=null; this.src='https://picsum.photos/seed/ceremony-belize/800/500';}"></picture></div>
+        <button class="play-btn" aria-label="Play ceremony"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M7 5.2l12 6.8-12 6.8V5.2z" fill="#1A1C1B"/></svg></button>
+      </div>
+      <div class="video-card__body"><div><h4>Ceremony <span>· YouTube Premiere</span></h4><p>Rose & Passy wedding — full ceremony. <a href="https://youtu.be/1CtHdq1qA6g" target="_blank" rel="noopener" style="text-decoration:underline;text-underline-offset:3px">Open on YouTube ↗</a></p></div><div class="video-card__action">▶</div></div>
+    </article>
+    <article class="video-card" data-video="reception" id="vc2" data-comingsoon="true" style="cursor:default">
+      <div class="video-card__media">
+        <div class="video-card__thumb"><picture><source srcset="thumbs/reception.webp" type="image/webp"><img id="thumbReception" alt="Reception — coming soon" src="thumbs/reception.jpg" loading="lazy" onerror="this.onerror=null;this.src='reception.png';"></picture></div>
+        <!-- Coming soon — no play, just pill -->
+        <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;background:rgba(15,15,15,.82);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.12);color:#FFFBF5;padding:10px 18px;border-radius:999px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.28)">Coming soon</div>
+      </div>
+      <div class="video-card__body"><div><h4>Reception <span>· Coming soon</span></h4><p>Highlights film — not yet available. Check back soon.</p></div><div class="video-card__action" style="opacity:.45">◷</div></div>
+    </article>
+  </div>
+  <div class="detail-grid">
+    <div class="detail" id="detailCeremony">
+      <div class="detail__head"><h3>Sacred Heart <i>· Ceremony</i></h3><span class="detail__badge">2:00 PM</span></div>
+      <div class="detail__body"><div class="detail__row"><div class="detail__ico">⌖</div><div><h4>Sacred Heart Church</h4><p>San Ignacio, Cayo · Doors 1:30 PM</p></div></div><div class="detail__row"><div class="detail__ico">♡</div><div><h4>Vows & readings</h4><p>Full mass, personal vows</p></div></div></div>
+      <div class="detail__foot"><span>Pool 01 — sacred</span><button class="btn" data-video="ceremony">Watch film →</button></div>
+    </div>
+    <div class="detail" id="detailReception">
+      <div class="detail__head"><h3>The Gully Grill <i>· Reception</i></h3><span class="detail__badge sage">4:00 PM</span></div>
+      <div class="detail__body"><div class="detail__row"><div class="detail__ico">✦</div><div><h4>Cocktails + dinner</h4><p>Open-air palapa · Belizean feast</p></div></div><div class="detail__row"><div class="detail__ico">♪</div><div><h4>Dancing till late</h4><p>First dance at sunset</p></div></div></div>
+      <div class="detail__foot"><span>Pool 02 — coming soon</span><button class="btn btn--ghost" data-video="reception" style="opacity:.6">Coming soon ◷</button></div>
+    </div>
+  </div>
+</section>
+
+<footer><p>With love — Rosanne & Andrew</p><small>July 4th 2026 · San Ignacio, Belize</small></footer>
+
+<div class="modal" id="modal-ceremony" aria-hidden="true"><div class="modal__backdrop" data-close></div><div class="modal__card" style="width:min(1020px,96vw)"><button class="modal__close" data-close>✕</button><div class="modal__media" id="modalCeremonyMedia" style="aspect-ratio:16/9;background:#000"><div class="modal__placeholder" id="ceremonyPlaceholder"><strong>Ceremony Film</strong><span>YouTube · Rose and Passy wedding</span><p>Tap play to load youtu.be/1CtHdq1qA6g — embedded, no download needed.</p><button class="btn" id="ceremonyInlinePlay" style="margin-top:18px">▶ Play now</button><br><a href="https://youtu.be/1CtHdq1qA6g" target="_blank" rel="noopener" style="display:inline-block;margin-top:12px;font-size:12px;opacity:.7;text-decoration:underline;text-underline-offset:3px;color:rgba(255,251,245,.85)">Open on YouTube ↗</a></div></div><div class="modal__body"><div><h3>Rose & Passy — Ceremony <span style="font-weight:400;opacity:.55">· YouTube</span></h3><p>youtu.be/1CtHdq1qA6g · Embedded player — closes on backdrop click or Esc</p></div><div style="display:flex;gap:10px"><a href="https://youtu.be/1CtHdq1qA6g" target="_blank" rel="noopener" class="btn">YouTube ↗</a><button class="btn btn--ghost" data-close>Close</button></div></div></div></div>
+<div class="modal" id="modal-reception" aria-hidden="true"><div class="modal__backdrop" data-close></div><div class="modal__card"><button class="modal__close" data-close>✕</button><div class="modal__media" style="aspect-ratio:16/9;background:#000;overflow:hidden"><img src="thumbs/reception.jpg" alt="Reception — coming soon" style="width:100%;height:100%;object-fit:cover;opacity:.92"><div style="position:absolute;inset:0;display:grid;place-items:center;background:linear-gradient(to bottom, transparent 40%, rgba(0,0,0,.42) 100%)"><span style="background:rgba(15,15,15,.82);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.12);color:#FFFBF5;padding:10px 18px;border-radius:999px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;box-shadow:0 10px 30px rgba(0,0,0,.28)">Coming soon</span></div></div><div class="modal__body"><div><h3>The Gully Grill — Reception <span style="font-weight:400;opacity:.55">· Coming soon</span></h3><p>Reception film not yet available — thumbnail preview above (16:9 Chad CSM clean).</p></div><button class="btn btn--ghost" data-close>Close</button></div></div></div>
+
+<script>
+// Remotion primitives — spring + interpolate + Easing (remotion-best-practices/rules/timing.md)
+const fps=60;
+const Easing={ linear:t=>t, quad:t=>t*t, cubic:t=>t*t*t, out:fn=>t=>1-fn(1-t), inOut:fn=>t=>t<0.5?fn(t*2)/2:1-fn((1-t)*2)/2 };
+function interpolate(input, inputRange, outputRange, opts={}){
+  const [inMin,inMax]=inputRange; const [outMin,outMax]=outputRange;
+  if(inMax===inMin) return outMin;
+  let t=(input-inMin)/(inMax-inMin);
+  if(opts.easing) t=opts.easing(t);
+  if(opts.extrapolateLeft==='clamp'&&t<0) t=0;
+  if(opts.extrapolateRight==='clamp'&&t>1) t=1;
+  return outMin+t*(outMax-outMin);
+}
+function spring({frame,fps=60,config={},from=0,to=1,delay=0}){
+  frame-=delay; if(frame<=0) return from;
+  const damping=config.damping??10, stiffness=config.stiffness??100, mass=config.mass??1;
+  const w0=Math.sqrt(stiffness/mass), zeta=damping/(2*Math.sqrt(stiffness*mass)), t=frame/fps;
+  let p; if(zeta<1){const wd=w0*Math.sqrt(1-zeta*zeta), e=Math.exp(-zeta*w0*t); p=1-e*(Math.cos(wd*t)+zeta/Math.sqrt(1-zeta*zeta)*Math.sin(wd*t));} else {const e=Math.exp(-w0*t); p=1-e*(1+w0*t);} 
+  if(damping>=80) p=Math.min(1,Math.max(0,p)); return from+p*(to-from);
+}
+function splitToChars(el){
+  const walker=document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null), texts=[];
+  while(walker.nextNode()) texts.push(walker.currentNode);
+  texts.forEach(node=>{
+    const parent=node.parentNode, txt=node.textContent;
+    if(!txt.trim()) return;
+    const frag=document.createDocumentFragment();
+    [...txt].forEach(ch=>{
+      if(ch===' '){ const s=document.createElement('span'); s.className='char space'; s.textContent=' '; frag.appendChild(s); }
+      else { const w=document.createElement('span'); w.className='word'; const c=document.createElement('span'); c.className='char'; c.textContent=ch; w.appendChild(c); frag.appendChild(w); }
+    });
+    parent.replaceChild(frag, node);
+  });
+}
+document.querySelectorAll('[data-split]').forEach(splitToChars);
+function springReveal(el, {delay=0, config={damping:200}, stagger=0}={}){
+  if(!el) return; const chars=el.querySelectorAll('.char'), has=chars.length>0;
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting && !el._revealed){
+        el._revealed=true; obs.unobserve(el);
+        let start=performance.now();
+        const tick=(now)=>{
+          const f=(now-start)/1000*fps, p=spring({frame:f-delay,fps,config});
+          if(has){
+            chars.forEach((c,i)=>{
+              const cp=spring({frame:f-delay-i*stagger,fps,config:{damping:200,stiffness:180}});
+              const y=interpolate(cp,[0,1],[110,0],{extrapolateRight:'clamp'}), rot=interpolate(cp,[0,1],[2,0],{extrapolateRight:'clamp'}), op=interpolate(cp,[0,1],[0,1],{extrapolateRight:'clamp',easing:Easing.out(Easing.quad)});
+              c.style.transform=`translateY(${y}%) rotate(${rot}deg)`; c.style.opacity=op;
+            });
+            const last=spring({frame:f-delay-(chars.length-1)*stagger,fps,config:{damping:200}});
+            if(last<0.99) requestAnimationFrame(tick); else chars.forEach(c=>{c.style.transform='translateY(0) rotate(0deg)';c.style.opacity='1';});
+          } else {
+            const y=interpolate(p,[0,1],[24,0],{extrapolateRight:'clamp'}), s=interpolate(p,[0,1],[0.98,1],{extrapolateRight:'clamp'}), op=interpolate(p,[0,1],[0,1],{extrapolateRight:'clamp'});
+            el.style.opacity=op; el.style.transform=`translateY(${y}px) scale(${s})`;
+            if(p<0.998) requestAnimationFrame(tick); else {el.style.opacity='1'; el.style.transform='translateY(0) scale(1)';}
+          }
+        }; requestAnimationFrame(tick);
+      }
+    });
+  }, {threshold:0.18, rootMargin:'0px 0px -8% 0px'}); obs.observe(el);
+}
+
+// ── KEN BURNS INTRO — 6 best stills, slow fade, before carousel ──
+(function initKenBurns(){
+  const stage=document.getElementById('kenburnsStage');
+  const dotsWrap=document.getElementById('kenburnsDots');
+  const counter=document.getElementById('kenburnsCounter');
+  const caption=document.getElementById('kenburnsCaption');
+  if(!stage) return;
+  // pick 6 best from current 18 — even spread incl. 1 vlcsnap + 1 WhatsApp for mobile variety
+  const best=["IMG_7759","IMG_7787","IMG_7814","vlcsnap-2026-09-04-22h42m20s077","WhatsApp_Image_2026-09-06_at_20.06.40","IMG_7854"];
+  const slides=[];
+  best.forEach((b, i)=>{
+    const slide=document.createElement('div');
+    slide.className='kenburns__slide'+(i===0?' is-active':'');
+    slide.dataset.index=i;
+    const wb=`photos/clean/16x9/${b}.webp`;
+    const jpg=`photos/clean/16x9/${b}.jpg`;
+    slide.innerHTML=`<picture><source srcset="${wb}" type="image/webp"><img src="${jpg}" alt="Opening still ${i+1}" loading="${i<2?'eager':'lazy'}"></picture>`;
+    stage.appendChild(slide);
+    slides.push(slide);
+    const d=document.createElement('button');
+    d.setAttribute('aria-label','Go to '+(i+1));
+    if(i===0) d.classList.add('is-active');
+    d.addEventListener('click', ()=> go(i));
+    dotsWrap.appendChild(d);
+  });
+  const dots=[...dotsWrap.querySelectorAll('button')];
+  let idx=0, timer=null;
+  function go(n){
+    slides[idx].classList.remove('is-active');
+    dots[idx].classList.remove('is-active');
+    idx=(n+slides.length)%slides.length;
+    slides[idx].classList.add('is-active');
+    dots[idx].classList.add('is-active');
+    if(counter) counter.textContent=String(idx+1).padStart(2,'0');
+    if(caption) caption.textContent=`${String(idx+1).padStart(2,'0')} / ${String(slides.length).padStart(2,'0')} — slow Ken Burns · fade · auto-advance`;
+    restart();
+  }
+  function next(){ go(idx+1); }
+  function restart(){
+    if(timer) clearInterval(timer);
+    timer=setInterval(next, 3800);
+  }
+  restart();
+  // pause on hover / when out of view
+  stage.addEventListener('mouseenter', ()=> { if(timer) clearInterval(timer); });
+  stage.addEventListener('mouseleave', restart);
+  document.addEventListener('visibilitychange', ()=> { if(document.hidden){ if(timer) clearInterval(timer);} else restart(); });
+  // also observe visibility — pause when scrolled away (saves GPU)
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) restart(); else if(timer) clearInterval(timer); });
+  },{threshold:0.15});
+  obs.observe(document.getElementById('kenburns'));
+  // keyboard
+  document.getElementById('kenburns').addEventListener('keydown', e=>{
+    if(e.key==='ArrowRight') next();
+    if(e.key==='ArrowLeft') go(idx-1);
+  });
+})();
+
+// ── build noir carousel — AUTO from photos/ folder (all images) ──
+const track=document.getElementById('carouselTrack');
+const dotsWrap=document.getElementById('carouselDots');
+// All photos — CHAD CSM CLEAN 16:9 — UPDATED 2026-09-07 to 18 selects (12 JPG + 2 vlcsnap + 4 WhatsApp)
+// Primary: photos/clean/16x9/*.jpg (1920x1080) + .webp ; Fallback -> photos/clean/*.jpg -> photos original -> picsum
+const _cleanBases=["IMG_7759","IMG_7765","IMG_7768","IMG_7787","IMG_7795","IMG_7800","IMG_7808","IMG_7814","IMG_7826","IMG_7833","IMG_7836","IMG_7854","vlcsnap-2026-09-04-22h42m20s077","vlcsnap-2026-09-06-20h10m35s141","WhatsApp_Image_2026-09-06_at_20.06.40_1","WhatsApp_Image_2026-09-06_at_20.06.40","WhatsApp_Image_2026-09-06_at_20.06.41_1","WhatsApp_Image_2026-09-06_at_20.06.42"];
+const photoFiles = _cleanBases.map(b=> `photos/clean/16x9/${b}.jpg`);
+const photoFallbacks = _cleanBases.map(b=> `photos/clean/${b}.jpg`);
+const _fallbackOrig=["photos/IMG_7759.JPG","photos/IMG_7765.JPG","photos/IMG_7768.JPG","photos/IMG_7787.JPG","photos/IMG_7795.JPG","photos/IMG_7800.JPG","photos/IMG_7808.JPG","photos/IMG_7814.JPG","photos/IMG_7826.JPG","photos/IMG_7833.JPG","photos/IMG_7836.JPG","photos/IMG_7854.JPG","photos/vlcsnap-2026-09-04-22h42m20s077.png","photos/vlcsnap-2026-09-06-20h10m35s141.png","photos/WhatsApp Image 2026-09-06 at 20.06.40 (1).png","photos/WhatsApp Image 2026-09-06 at 20.06.40.png","photos/WhatsApp Image 2026-09-06 at 20.06.41 (1).png","photos/WhatsApp Image 2026-09-06 at 20.06.42.png"];
+const photoFallbacks2 = _fallbackOrig;
+const N = photoFiles.length;
+// dynamic section height so every photo gets scroll time — 24 -> ~436vh
+const sectionEl=document.getElementById('carousel');
+// dwell — longer per photo so you can see it before it whisks (was 14vh/photo → 28vh/photo)
+if(sectionEl){ const h = Math.max(320, 100 + N*28); sectionEl.style.height = h + 'vh'; }
+const seeds = photoFiles.map((_,i)=> `wedding-${String(i+1).padStart(2,'0')}-${i}`);
+for(let i=0;i<photoFiles.length;i++){
+  const src=photoFiles[i];
+  const orig=photoFallbacks[i];
+  const fallback=`https://picsum.photos/seed/${seeds[i]}/800/1200`;
+  const card=document.createElement('article'); card.className='carousel-card'; card.dataset.index=i;
+  // 200% scaled with overlap + vertical frames (user: "some dont fit can we make vertical frames too")
+  const base=_cleanBases[i];
+  const isVertical = base.includes("WhatsApp_Image_2026-09-06_at_20.06.40") || base.includes("WhatsApp_Image_2026-09-06_at_20.06.42");
+  const isSquare = base.includes("WhatsApp_Image_2026-09-06_at_20.06.41_1");
+  if(isVertical){ card.classList.add('is-vertical'); card.style.flex='0 0 380px'; card.style.width='380px'; card.style.aspectRatio='4/5'; }
+  else if(isSquare){ card.classList.add('is-square'); card.style.flex='0 0 420px'; card.style.width='420px'; card.style.aspectRatio='1/1'; }
+  else {
+    const widths=[680, 640, 700, 660, 680, 640, 700];
+    const w=widths[i % widths.length];
+    card.style.flex=`0 0 ${w}px`;
+    card.style.width=`${w}px`;
+    card.style.aspectRatio='16/9';
+  }
+  // Use <picture> for webp: clean/*.webp preferred
+  const webpSrc = src.replace('.jpg','.webp');
+  card.innerHTML=`<div class="carousel-media"><picture><source srcset="${webpSrc}" type="image/webp"><img alt="Wedding photo ${String(i+1).padStart(2,'0')}" loading="lazy"></picture></div>`;
+  track.appendChild(card);
+  const img=card.querySelector('img');
+  // Try: 16x9 clean -> clean -> original JPG -> picsum
+  const fallback2 = photoFallbacks2[i];
+  const tryLoad=(url, next)=>{
+    const t=new Image();
+    t.onload=()=>{ img.src=t.src; };
+    t.onerror=()=>{ if(next) next(); else img.src=fallback; };
+    t.src=url;
+  };
+  tryLoad(src, ()=> tryLoad(orig, ()=> tryLoad(fallback2, ()=>{ img.src=fallback; })));
+  // safety timeout
+  setTimeout(()=>{ if(!img.getAttribute('src') || img.src.endsWith('/')) img.src=fallback; }, 900);
+  img.addEventListener('error',()=>{ if(img.src!==fallback && img.src!==orig) { img.src=orig; setTimeout(()=>{ if(img.naturalWidth===0) img.src=fallback; },400);} else if(img.src!==fallback) img.src=fallback; });
+  const b=document.createElement('button'); b.setAttribute('aria-label','Go to '+(i+1)); b.dataset.index=i; dotsWrap.appendChild(b);
+}
+// update static labels for N
+const _counter=document.getElementById('photoCounter'); if(_counter) _counter.textContent='01';
+const _caption=document.getElementById('carouselCaption'); if(_caption) _caption.textContent=`01 / ${String(N).padStart(2,'0')}`;
+const _counterTotal=document.querySelector('.carousel-counter span'); if(_counterTotal) _counterTotal.textContent=`/ ${String(N).padStart(2,'0')}`;
+const _barCount=document.getElementById('barCount'); if(_barCount) _barCount.textContent=String(N);
+const _frameCountSub=document.getElementById('frameCountSub'); if(_frameCountSub) _frameCountSub.textContent=String(N);
+(function hydrateThumbs(){
+  const YT_ID='1CtHdq1qA6g';
+  const ytThumbMax=`https://img.youtube.com/vi/${YT_ID}/maxresdefault.jpg`;
+  const ytThumbHQ=`https://img.youtube.com/vi/${YT_ID}/hqdefault.jpg`;
+  const c=document.getElementById('thumbCeremony');
+  if(c){
+    // Prefer YouTube thumbnail; if local thumbs/ceremony.jpg exists, let it override on success
+    const probe=new Image();
+    probe.onload=()=>{ c.src=probe.src; };
+    probe.onerror=()=>{ /* keep YouTube thumb */ };
+    probe.src='thumbs/ceremony.jpg';
+    // Ensure YouTube thumb is already set; probe will override only if local exists
+    // Preload YouTube maxres, fallback to hq
+    const yt=new Image();
+    yt.onload=()=>{ if(!probe.complete || probe.naturalWidth===0) c.src=yt.src; };
+    yt.onerror=()=>{ c.src=ytThumbHQ; };
+    yt.src=ytThumbMax;
+  }
+  const r=document.getElementById('thumbReception');
+  if(r){const t=new Image();t.onload=()=>r.src=t.src; t.src='thumbs/reception.jpg'; r.addEventListener('error',()=>r.src='https://picsum.photos/seed/reception-gully/800/500');}
+})();
+
+const cards=[...document.querySelectorAll('.carousel-card')];
+const dots=[...dotsWrap.querySelectorAll('button')];
+const section=document.getElementById('carousel');
+const viewport=document.getElementById('carouselViewport');
+const counter=document.getElementById('photoCounter');
+const caption=document.getElementById('carouselCaption');
+const progress=document.getElementById('galleryProgress');
+const dot=document.getElementById('galleryDot');
+const progressBar=document.getElementById('progressBar');
+const topbar=document.getElementById('topbar');
+const preludeBg=document.getElementById('preludeBg');
+const heroBg=document.getElementById('heroBg');
+
+// intro
+(function intro(){
+  let f=0; (function tick(){ f+=1; const p=spring({frame:f,fps,config:{damping:20,stiffness:160}}); topbar.style.opacity=interpolate(p,[0,1],[0,1],{extrapolateRight:'clamp'}); topbar.style.transform=`translateX(-50%) translateY(${interpolate(p,[0,1],[14,0],{extrapolateRight:'clamp'})}px)`; if(p<0.995) requestAnimationFrame(tick); else {topbar.style.opacity='1'; topbar.style.transform='translateX(-50%) translateY(0)';}})();
+  const eye=document.getElementById('preludeEyebrow'); let ef=0; (function te(){ ef+=1; const p=spring({frame:ef-8,fps,config:{damping:200}}); eye.style.opacity=interpolate(p,[0,1],[0,1],{extrapolateRight:'clamp'}); eye.style.transform=`translateY(${interpolate(p,[0,1],[10,0],{extrapolateRight:'clamp'})}px)`; if(p<0.995) requestAnimationFrame(te);})();
+  springReveal(document.getElementById('heroPrelude'),{delay:10,stagger:1.6,config:{damping:18,stiffness:180}});
+  springReveal(document.getElementById('preludeSub'),{delay:18,config:{damping:200}});
+  springReveal(document.getElementById('preludeMeta'),{delay:22,config:{damping:200}});
+  springReveal(document.getElementById('scrollHint'),{delay:28,config:{damping:200}});
+})();
+
+// ── scroll → x with 3D spin + Remotion blur ──
+let targetX=0, currentX=0;
+let maxScroll=0;
+function measure(){
+  const vw=viewport.clientWidth;
+  const tw=track.scrollWidth;
+  maxScroll=Math.max(0, tw - vw + 64);
+}
+measure();
+window.addEventListener('resize', measure);
+
+let activeIdx=0;
+let _pForBar=0, _pLinearForBar=0;
+function updateCarousel(){
+  const rect=section.getBoundingClientRect();
+  const total=section.offsetHeight - window.innerHeight;
+  const scrolled=Math.min(Math.max(-rect.top,0), total);
+  const pLinear= total>0? scrolled/total : 0;
+  const p=interpolate(pLinear,[0,1],[0,1],{easing:Easing.inOut(Easing.quad), extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+  targetX = p * maxScroll;
+  _pForBar=p; _pLinearForBar=pLinear;
+  // activeIdx now driven by visual center in render() — not pLinear — so focus follows the card coming forward
+}
+
+// Remotion-style per-card 3D + blur — driven by distance from viewport center
+// FIX: blur timing — incoming (forward) card de-blurs BEFORE center so focus feels predictive
+function render(){
+  // slower lerp so photo lingers before it whisks
+  const lerp=0.08;
+  currentX += (targetX - currentX) * lerp;
+  if(Math.abs(targetX - currentX) < 0.08) currentX=targetX;
+  track.style.transform=`translate3d(${-currentX.toFixed(2)}px,0,0)`;
+  // update progress bar here from scroll p (keeps bar in sync)
+  progress.style.width=(_pForBar*100).toFixed(2)+'%';
+  dot.style.opacity=_pLinearForBar>0.01?'1':'0';
+  dot.style.left=`calc(${ (_pForBar*100).toFixed(2)}% - 3px)`;
+
+  // per-card 3D spin + blur
+  const vw=viewport.clientWidth;
+  const center= currentX + vw/2; // track-space center
+  // find visually-closest card to center — this is the true focus as it comes forward
+  let bestIdx=0, bestDist=Infinity;
+  for(let k=0;k<cards.length;k++){
+    const ck=cards[k].offsetLeft + cards[k].offsetWidth/2;
+    const d=Math.abs(ck - center);
+    if(d<bestDist){ bestDist=d; bestIdx=k; }
+  }
+  if(bestIdx!==activeIdx){
+    activeIdx=bestIdx;
+    counter.textContent=String(bestIdx+1).padStart(2,'0');
+    caption.textContent=`${String(bestIdx+1).padStart(2,'0')} / ${String(photoFiles.length).padStart(2,'0')}`;
+    dots.forEach((d,i)=> d.classList.toggle('active', i===bestIdx));
+  }
+  cards.forEach((card,i)=>{
+    // card center in track space
+    const left=card.offsetLeft;
+    const w=card.offsetWidth;
+    const c= left + w/2;
+    const dist= c - center; // negative = left of center, positive = right
+    const absDist=Math.abs(dist);
+
+    // Remotion interpolate: distance -> rotateY, scale, blur, opacity, brightness, saturate
+    // rotateY: far left +22deg (face in), center 0, far right -22deg — like carousel spin
+    const rotY=interpolate(dist, [-vw*0.55, 0, vw*0.55], [22, 0, -22], {extrapolateLeft:'clamp', extrapolateRight:'clamp', easing:Easing.inOut(Easing.quad)});
+    // subtle tilt X for depth
+    const rotX=interpolate(absDist, [0, vw*0.50], [0, -2], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+    // scale 200% with overlap — center pops huge, edges shrink but still large (mobile: gentler)
+    const isMobile = vw < 760;
+    const scale=interpolate(absDist, [0, vw*0.42], [isMobile ? 1.08 : 1.22, isMobile ? 0.92 : 0.88], {extrapolateLeft:'clamp', extrapolateRight:'clamp', easing:Easing.out(Easing.quad)});
+    // ONLY at the ends — middle stays razor sharp (user: "blur only when it gets to the ends")
+    // hold 0 blur to 0.52vw (~700px from center), then gentle ramp so only furthest 1-2 cards soften
+    let blur;
+    if(dist > 0){
+      blur=interpolate(absDist, [vw*0.52, vw*0.82], [0, 5], {extrapolateLeft:'clamp', extrapolateRight:'clamp', easing:Easing.out(Easing.quad)});
+    } else {
+      blur=interpolate(absDist, [vw*0.54, vw*0.84], [0, 5], {extrapolateLeft:'clamp', extrapolateRight:'clamp', easing:Easing.inOut(Easing.quad)});
+    }
+    // keep brightness/saturation subtle — only furthest desaturate/dim
+    const bright = interpolate(absDist, [0, vw*0.68], [1.02, 0.86], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+    const sat = interpolate(absDist, [0, vw*0.72], [1, 0.76], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+    const op=interpolate(absDist, [0, vw*0.78], [1, 0.62], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+
+    const isActive = i===activeIdx;
+    // 200% overlap — active lifts forward and scales, neighbors overlap behind
+    const overlap = interpolate(absDist, [0, vw*0.42], [0, -42], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+    const z= isActive ? 42 : interpolate(absDist, [0, vw*0.50], [32, -28], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+
+    card.style.transform=`translateZ(${z.toFixed(1)}px) translateX(${overlap.toFixed(1)}px) rotateY(${rotY.toFixed(2)}deg) rotateX(${rotX.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+    card.style.filter=`saturate(${sat.toFixed(2)}) brightness(${bright.toFixed(2)}) blur(${blur.toFixed(2)}px)`;
+    card.style.opacity=op.toFixed(3);
+    card.style.zIndex= String(100 - Math.round(absDist/8));
+    // pure photo: no border, just deeper shadow for active — elegant on black
+    card.style.boxShadow = isActive ? '0 36px 100px rgba(0,0,0,.78), 0 0 0 1px rgba(201,164,106,.30), 0 0 40px rgba(201,164,106,.10)' : '0 18px 54px rgba(0,0,0,.48)';
+    card.classList.toggle('is-active', isActive);
+    const img=card.querySelector('img');
+    if(img){ img.style.transform = isActive ? 'scale(1.08)' : `scale(${interpolate(absDist,[0,vw*0.5],[1.06,1.02],{extrapolateLeft:'clamp', extrapolateRight:'clamp'}).toFixed(3)})`; }
+  });
+
+  requestAnimationFrame(render);
+}
+render();
+
+// click dots
+dots.forEach(b=>{
+  b.addEventListener('click', ()=>{
+    const i=parseInt(b.dataset.index,10);
+    const n=photoFiles.length;
+    const total=section.offsetHeight - window.innerHeight;
+    const targetTop=section.offsetTop + (i/(n-1))*total;
+    window.scrollTo({top: targetTop, behavior:'smooth'});
+  });
+});
+window.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight' || e.key==='ArrowLeft'){
+    const n=photoFiles.length;
+    const cur=activeIdx;
+    let nxt= cur + (e.key==='ArrowRight'?1:-1);
+    nxt=Math.max(0,Math.min(n-1,nxt));
+    const total=section.offsetHeight - window.innerHeight;
+    window.scrollTo({top: section.offsetTop + (nxt/(n-1))*total, behavior:'smooth'});
+  }
+});
+// mobile touch swipe — horizontal drag to scrub carousel (in addition to vertical scroll)
+(function addTouch(){
+  const vp=document.getElementById('carouselViewport');
+  if(!vp) return;
+  let sx=0, startX=0, dragging=false;
+  vp.addEventListener('touchstart', e=>{
+    if(e.touches.length!==1) return;
+    dragging=true; sx=e.touches[0].clientX; startX=currentX;
+    vp.style.cursor='grabbing';
+  }, {passive:true});
+  vp.addEventListener('touchmove', e=>{
+    if(!dragging || e.touches.length!==1) return;
+    const dx=e.touches[0].clientX - sx;
+    // map drag to targetX (inverted: drag left = forward)
+    let nxt = startX - dx*1.2;
+    nxt=Math.max(0,Math.min(maxScroll, nxt));
+    targetX=nxt;
+    // sync scroll position to keep dots in sync
+    const total=section.offsetHeight - window.innerHeight;
+    if(total>0){
+      const p=nxt/maxScroll;
+      const top=section.offsetTop + p*total;
+      window.scrollTo(0, top);
+    }
+  }, {passive:true});
+  vp.addEventListener('touchend', ()=>{ dragging=false; vp.style.cursor=''; });
+  vp.addEventListener('touchcancel', ()=>{ dragging=false; });
+})();
+
+// reveals
+springReveal(document.getElementById('heroEyebrow'),{delay:2,config:{damping:200}});
+springReveal(document.getElementById('heroNames'),{stagger:1.4,config:{damping:18,stiffness:180},delay:6});
+const huge=document.getElementById('heroHugeDate'); if(huge){ const m=huge.querySelector('[data-split]'); if(m) springReveal(m,{stagger:1.1,config:{damping:16,stiffness:190},delay:12}); springReveal(huge,{delay:12,config:{damping:200}});}
+springReveal(document.getElementById('heroQuote'),{delay:20,config:{damping:200}});
+springReveal(document.getElementById('heroCta'),{delay:26,config:{damping:20,stiffness:220}});
+springReveal(document.getElementById('heroOrnament'),{delay:24,config:{damping:200}});
+const vHead=document.getElementById('videosHead'); if(vHead) vHead.querySelectorAll('.eyebrow, h2, p').forEach((el,i)=> springReveal(el,{delay:i*8,config:{damping:200}}));
+const vc1=document.getElementById('vc1'); if(vc1) springReveal(vc1,{delay:10,config:{damping:22,stiffness:180}});
+const vc2=document.getElementById('vc2'); if(vc2) springReveal(vc2,{delay:18,config:{damping:22,stiffness:180}});
+const d1=document.getElementById('detailCeremony'); if(d1) springReveal(d1,{delay:14,config:{damping:22,stiffness:180}});
+const d2=document.getElementById('detailReception'); if(d2) springReveal(d2,{delay:22,config:{damping:22,stiffness:180}});
+const playObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const btn=e.target.querySelector('.play-btn'); if(!btn) return;
+      let f=0; (function pop(){ f+=1; const p=spring({frame:f-18,fps,config:{damping:14,stiffness:160}}); const s=interpolate(p,[0,1],[0.9,1],{extrapolateRight:'clamp'}), op=interpolate(p,[0,1],[0,1],{extrapolateRight:'clamp'}); btn.style.opacity=op; btn.style.transform=`translate(-50%,-50%) scale(${s})`; if(p<0.995) requestAnimationFrame(pop); else {btn.style.opacity='1'; btn.style.transform='translate(-50%,-50%) scale(1)';}})();
+      playObs.unobserve(e.target);
+    }
+  });
+},{threshold:0.4}); document.querySelectorAll('.video-card').forEach(c=>playObs.observe(c));
+
+const sections=[{id:'journey',el:document.getElementById('journey')},{id:'carousel',el:document.getElementById('carousel')},{id:'celebration',el:document.getElementById('celebration')},{id:'videos',el:document.getElementById('videos')}];
+const navDots=[...document.querySelectorAll('.nav-dots a')];
+let ticking=false;
+function onScroll(){
+  const h=document.documentElement.scrollHeight - window.innerHeight, s=window.scrollY;
+  progressBar.style.width=(h>0?s/h*100:0)+'%';
+  let cur='journey'; const off=window.innerHeight*0.45;
+  for(const sec of sections){ if(window.scrollY + off >= sec.el.offsetTop) cur=sec.id; }
+  navDots.forEach(d=> d.classList.toggle('active', d.getAttribute('href')==='#'+cur));
+  const preludeP=interpolate(window.scrollY,[0,window.innerHeight],[0,60],{easing:Easing.linear, extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+  document.getElementById('preludeBg').style.transform=`translateY(${preludeP*0.22}px)`;
+  const heroRect=document.getElementById('celebration').getBoundingClientRect();
+  const heroProg=interpolate(-heroRect.top,[-200,600],[0,1],{easing:Easing.linear, extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+  heroBg.style.transform=`translateY(${interpolate(heroProg,[0,1],[-20,20],{easing:Easing.linear})}px) scale(${interpolate(heroProg,[0,1],[1,1.04],{easing:Easing.linear})})`;
+  updateCarousel();
+}
+window.addEventListener('scroll', ()=>{ if(!ticking){ requestAnimationFrame(()=>{onScroll(); ticking=false;}); ticking=true;}}, {passive:true});
+window.addEventListener('resize', ()=>{ measure(); updateCarousel(); });
+window.addEventListener('load', ()=>{ measure(); updateCarousel(); onScroll();});
+measure(); updateCarousel(); onScroll();
+
+// ── YouTube modal logic ──
+const YT_ID='1CtHdq1qA6g';
+function injectYouTube(){
+  const media=document.getElementById('modalCeremonyMedia');
+  const ph=document.getElementById('ceremonyPlaceholder');
+  if(!media || media.querySelector('iframe')) return;
+  if(ph) ph.style.display='none';
+  // Remove any prior fallback
+  const oldFb=document.getElementById('ytFallback'); if(oldFb) oldFb.remove();
+  const origin=encodeURIComponent(window.location.origin);
+  const iframe=document.createElement('iframe');
+  // Use youtube.com (not nocookie) — nocookie triggers Error 153 on some uploads even when embedding is allowed
+  // origin= helps avoid 153, enablejsapi=1 lets us catch errors via postMessage
+  iframe.src=`https://www.youtube.com/embed/${YT_ID}?autoplay=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&origin=${origin}`;
+  iframe.title='YouTube video player';
+  iframe.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+  iframe.allowFullscreen=true;
+  iframe.loading='eager';
+  iframe.referrerPolicy='strict-origin-when-cross-origin';
+  iframe.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;display:block';
+  media.style.position='relative';
+  media.appendChild(iframe);
+
+  // Error 153 fallback: YouTube blocks embed when owner disabled "Allow embedding"
+  // We can't read iframe contents (cross-origin), but we can listen for YT postMessage errors
+  // and also show a persistent fallback after 2.5s that sits over the error screen
+  const fallback=document.createElement('div');
+  fallback.id='ytFallback';
+  fallback.style.cssText='position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:linear-gradient(to bottom, rgba(15,15,15,.18), rgba(15,15,15,.82));color:#FFFBF5;text-align:center;padding:24px;z-index:2';
+  fallback.innerHTML=`<div style="background:rgba(201,164,106,.14);border:1px solid rgba(201,164,106,.28);border-radius:12px;padding:14px 18px;max-width:520px">
+    <div style="font-family:Cormorant Garamond,serif;font-size:18px;font-weight:600">Embedding blocked by YouTube (Error 153)</div>
+    <div style="font-size:12px;opacity:.72;margin-top:6px;line-height:1.5">This video's owner has disabled embedding. Tap below to watch directly on YouTube — same video, no download.</div>
+  </div>
+  <a href="https://youtu.be/${YT_ID}" target="_blank" rel="noopener" class="btn" style="background:#FFFBF5;color:#0F0F0F">▶ Open on YouTube ↗</a>
+  <div style="font-size:11px;opacity:.6">Fix for owner: YouTube Studio → Content → ${YT_ID} → Details → Show more → check “Allow embedding” → Save. Then re-try here.</div>`;
+  media.appendChild(fallback);
+
+  let fallbackShown=false;
+  const showFallback=()=>{ if(fallbackShown) return; fallbackShown=true; fallback.style.display='flex'; };
+  // Only show fallback on actual YT error 150/153 — if embedding is allowed, never auto-cover the player
+  // Listen for YT Iframe API postMessages (onError 153/150)
+  const onMsg=(e)=>{
+    if(e.origin!== 'https://www.youtube.com' && e.origin!=='https://www.youtube-nocookie.com') return;
+    try{
+      const d=typeof e.data==='string'? JSON.parse(e.data): e.data;
+      if(d && d.event==='onError' && [150,153].includes(d.info)) { showFallback(); }
+      if(d && d.info && d.info.playerState===1) { fallback.style.display='none'; }
+    }catch{}
+  };
+  window.addEventListener('message', onMsg, {once:false});
+  // If no error after 8s, hide fallback if it somehow showed (covers stale state) — but don't auto-show
+  // Cleanup on close stores handler for removeYouTube
+  media._ytCleanup=()=>{ window.removeEventListener('message', onMsg); };
+  // Also offer immediate fallback button even when embed succeeds (always visible tiny link)
+  // Add small persistent "Open on YouTube" pill at bottom of player
+  const pill=document.createElement('a');
+  pill.href=`https://youtu.be/${YT_ID}`; pill.target='_blank'; pill.rel='noopener';
+  pill.textContent='Open on YouTube ↗';
+  pill.style.cssText='position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:3;background:rgba(255,251,245,.92);color:#0F0F0F;border-radius:999px;padding:7px 14px;font-size:11px;font-weight:700;letter-spacing:.06em;text-decoration:none;display:none';
+  pill.id='ytPill';
+  media.appendChild(pill);
+  iframe.addEventListener('load', ()=>{ setTimeout(()=>{ const p=document.getElementById('ytPill'); if(p) p.style.display='block'; }, 800); });
+}
+function removeYouTube(){
+  const media=document.getElementById('modalCeremonyMedia');
+  if(!media) return;
+  const iframe=media.querySelector('iframe');
+  if(iframe) iframe.remove();
+  const fb=document.getElementById('ytFallback'); if(fb) fb.remove();
+  const pill=document.getElementById('ytPill'); if(pill) pill.remove();
+  if(media._ytCleanup) { media._ytCleanup(); delete media._ytCleanup; }
+  const ph=document.getElementById('ceremonyPlaceholder');
+  if(ph) ph.style.display='';
+}
+document.getElementById('ceremonyInlinePlay')?.addEventListener('click', (e)=>{ e.preventDefault(); injectYouTube(); });
+
+// modals
+function openModal(name){
+  const m=document.getElementById('modal-'+name); if(!m) return;
+  m.classList.add('open'); m.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
+  if(name==='ceremony') injectYouTube();
+  const card=m.querySelector('.modal__card'); card.style.opacity='0'; card.style.transform='scale(.96) translateY(10px)';
+  let f=0; (function pop(){ f+=1; const p=spring({frame:f,fps,config:{damping:18,stiffness:220}}); const s=interpolate(p,[0,1],[0.96,1],{extrapolateRight:'clamp'}), y=interpolate(p,[0,1],[10,0],{extrapolateRight:'clamp'}), op=interpolate(p,[0,1],[0,1],{extrapolateRight:'clamp'}); card.style.opacity=op; card.style.transform=`scale(${s}) translateY(${y}px)`; if(p<0.995) requestAnimationFrame(pop); else {card.style.opacity='1'; card.style.transform='scale(1) translateY(0)';}})();
+}
+function closeModals(){
+  document.querySelectorAll('.modal.open').forEach(m=>{
+    const isCeremony=m.id==='modal-ceremony';
+    if(isCeremony) removeYouTube();
+    m.classList.remove('open'); m.setAttribute('aria-hidden','true');
+  });
+  document.body.style.overflow='';
+}
+document.querySelectorAll('[data-video]').forEach(el=> el.addEventListener('click', e=>{e.preventDefault(); openModal(el.dataset.video);} ));
+// Also allow clicking the ceremony card media directly
+document.getElementById('vc1')?.addEventListener('click', (e)=>{
+  // avoid double-open when clicking the inner <a>
+  if(e.target.closest('a')) return;
+  e.preventDefault(); openModal('ceremony');
+});
+document.querySelectorAll('[data-close]').forEach(el=> el.addEventListener('click', closeModals));
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModals(); });
+if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.querySelectorAll('.char').forEach(c=>{c.style.transform='none'; c.style.opacity='1';});
+}
+</script>
+</body>
+</html>
