@@ -1,7 +1,14 @@
+# Static only — no remotion, no scripts
+remotion-wedding/
+scripts/
+index.literal-jungle.html
+index.simple.html
+index.thicket.html
+thumbs/
+reception.png
+
 # Deps
 node_modules/
-remotion-wedding/node_modules/
-remotion-wedding/out/
 
 # OS
 .DS_Store
