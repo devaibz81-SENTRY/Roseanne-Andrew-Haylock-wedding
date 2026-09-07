@@ -530,21 +530,11 @@ const photoFallbacks = _cleanBases.map(b=> `photos/clean/${b}.jpg`);
 const _fallbackOrig=["photos/IMG_7759.JPG","photos/IMG_7765.JPG","photos/IMG_7768.JPG","photos/IMG_7787.JPG","photos/IMG_7795.JPG","photos/IMG_7800.JPG","photos/IMG_7808.JPG","photos/IMG_7814.JPG","photos/IMG_7826.JPG","photos/IMG_7833.JPG","photos/IMG_7836.JPG","photos/IMG_7854.JPG","photos/vlcsnap-2026-09-04-22h42m20s077.png","photos/vlcsnap-2026-09-06-20h10m35s141.png","photos/WhatsApp Image 2026-09-06 at 20.06.40 (1).png","photos/WhatsApp Image 2026-09-06 at 20.06.40.png","photos/WhatsApp Image 2026-09-06 at 20.06.41 (1).png"];
 const photoFallbacks2 = _fallbackOrig;
 const N = photoFiles.length;
-// dynamic section height so every photo gets scroll time — 24 -> ~436vh
 const sectionEl=document.getElementById('carousel');
-// dwell — desktop 28vh/photo, mobile 20vh/photo for smoother shorter scroll
+// no scroll hijack — simple 100vh sticky carousel, arrow/dots/drag only
 if(sectionEl){
-  const isMob = window.innerWidth < 760;
-  const per = isMob ? 20 : 28;
-  const h = Math.max(320, 100 + N*per);
-  sectionEl.style.height = h + 'vh';
-  // recalc on resize
-  window.addEventListener('resize', ()=>{
-    const mob = window.innerWidth < 760;
-    const p = mob ? 20 : 28;
-    const hh = Math.max(320, 100 + N*p);
-    sectionEl.style.height = hh + 'vh';
-  });
+  sectionEl.style.height = '100vh';
+  sectionEl.style.minHeight = '100vh';
 }
 const seeds = photoFiles.map((_,i)=> `wedding-${String(i+1).padStart(2,'0')}-${i}`);
 for(let i=0;i<photoFiles.length;i++){
@@ -635,7 +625,7 @@ const heroBg=document.getElementById('heroBg');
   springReveal(document.getElementById('scrollHint'),{delay:28,config:{damping:200}});
 })();
 
-// ── scroll → x with 3D spin + Remotion blur ──
+// arrow/dots/drag only — no scroll hijack
 let targetX=0, currentX=0;
 let maxScroll=0;
 function measure(){
@@ -645,19 +635,24 @@ function measure(){
 }
 measure();
 window.addEventListener('resize', measure);
-
 let activeIdx=0;
 let _pForBar=0, _pLinearForBar=0;
-function updateCarousel(){
-  const rect=section.getBoundingClientRect();
-  const total=section.offsetHeight - window.innerHeight;
-  const scrolled=Math.min(Math.max(-rect.top,0), total);
-  const pLinear= total>0? scrolled/total : 0;
-  const p=interpolate(pLinear,[0,1],[0,1],{easing:Easing.inOut(Easing.quad), extrapolateLeft:'clamp', extrapolateRight:'clamp'});
-  targetX = p * maxScroll;
-  _pForBar=p; _pLinearForBar=pLinear;
-  // activeIdx now driven by visual center in render() — not pLinear — so focus follows the card coming forward
+function centerToIndex(i){
+  const n=photoFiles.length;
+  if(n<=1){ targetX=0; _pForBar=0; _pLinearForBar=0; activeIdx=0; return; }
+  const clamped=Math.max(0,Math.min(n-1,i));
+  const card=cards[clamped];
+  if(!card) return;
+  const vw=viewport.clientWidth;
+  const cardCenter = card.offsetLeft + card.offsetWidth/2;
+  let x = cardCenter - vw/2;
+  x = Math.max(0, Math.min(maxScroll, x));
+  targetX = x;
+  const p = maxScroll>0 ? x/maxScroll : clamped/(n-1);
+  _pForBar = p; _pLinearForBar = p;
+  activeIdx = clamped;
 }
+function updateCarousel(){}
 
 // Clean + smooth — desktop keeps subtle 3D, mobile is flat & fast with minimal blur
 function render(){
@@ -743,45 +738,27 @@ render();
 dots.forEach(b=>{
   b.addEventListener('click', ()=>{
     const i=parseInt(b.dataset.index,10);
-    const n=photoFiles.length;
-    const total=section.offsetHeight - window.innerHeight;
-    const targetTop=section.offsetTop + (i/(n-1))*total;
-    window.scrollTo({top: targetTop, behavior:'smooth'});
+    centerToIndex(i);
   });
 });
-// next/prev buttons — mobile fallback when scroll/swipe is janky
+// next/prev buttons — primary navigation (no scroll hijack)
 (function addNavButtons(){
   const prev=document.getElementById('carouselPrev');
   const next=document.getElementById('carouselNext');
   if(!prev || !next) return;
-  function goTo(i){
-    const n=photoFiles.length;
-    const clamped=Math.max(0,Math.min(n-1,i));
-    const total=section.offsetHeight - window.innerHeight;
-    const top=section.offsetTop + (clamped/(n-1))*total;
-    window.scrollTo({top, behavior:'smooth'});
-    measure();
-    const p = n>1 ? clamped/(n-1) : 0;
-    targetX = p * maxScroll;
-  }
-  prev.addEventListener('click', ()=> goTo(activeIdx-1));
-  next.addEventListener('click', ()=> goTo(activeIdx+1));
+  prev.addEventListener('click', ()=> centerToIndex(activeIdx-1));
+  next.addEventListener('click', ()=> centerToIndex(activeIdx+1));
   function updateDisabled(){
     prev.disabled = activeIdx===0;
     next.disabled = activeIdx===photoFiles.length-1;
   }
   setInterval(updateDisabled, 320);
-  window.addEventListener('scroll', updateDisabled, {passive:true});
 })();
 
 window.addEventListener('keydown', e=>{
   if(e.key==='ArrowRight' || e.key==='ArrowLeft'){
-    const n=photoFiles.length;
-    const cur=activeIdx;
-    let nxt= cur + (e.key==='ArrowRight'?1:-1);
-    nxt=Math.max(0,Math.min(n-1,nxt));
-    const total=section.offsetHeight - window.innerHeight;
-    window.scrollTo({top: section.offsetTop + (nxt/(n-1))*total, behavior:'smooth'});
+    let nxt= activeIdx + (e.key==='ArrowRight'?1:-1);
+    centerToIndex(nxt);
   }
 });
 // mobile touch swipe — horizontal drag to scrub carousel (in addition to vertical scroll)
@@ -797,19 +774,25 @@ window.addEventListener('keydown', e=>{
   vp.addEventListener('touchmove', e=>{
     if(!dragging || e.touches.length!==1) return;
     const dx=e.touches[0].clientX - sx;
-    // map drag to targetX (inverted: drag left = forward)
-    let nxt = startX - dx*1.2;
+    let nxt = startX - dx*1.0;
     nxt=Math.max(0,Math.min(maxScroll, nxt));
     targetX=nxt;
-    // sync scroll position to keep dots in sync
-    const total=section.offsetHeight - window.innerHeight;
-    if(total>0){
-      const p=nxt/maxScroll;
-      const top=section.offsetTop + p*total;
-      window.scrollTo(0, top);
-    }
+    const p = maxScroll>0 ? nxt/maxScroll : 0;
+    _pForBar=p; _pLinearForBar=p;
   }, {passive:true});
-  vp.addEventListener('touchend', ()=>{ dragging=false; vp.style.cursor=''; });
+  vp.addEventListener('touchend', ()=>{
+    dragging=false; vp.style.cursor='';
+    // snap to closest card
+    const vw=viewport.clientWidth;
+    const center = targetX + vw/2;
+    let best=activeIdx, bestD=Infinity;
+    for(let k=0;k<cards.length;k++){
+      const ck=cards[k].offsetLeft + cards[k].offsetWidth/2;
+      const d=Math.abs(ck-center);
+      if(d<bestD){bestD=d; best=k;}
+    }
+    centerToIndex(best);
+  });
   vp.addEventListener('touchcancel', ()=>{ dragging=false; });
 })();
 
@@ -849,12 +832,11 @@ function onScroll(){
   const heroRect=document.getElementById('celebration').getBoundingClientRect();
   const heroProg=interpolate(-heroRect.top,[-200,600],[0,1],{easing:Easing.linear, extrapolateLeft:'clamp', extrapolateRight:'clamp'});
   heroBg.style.transform=`translateY(${interpolate(heroProg,[0,1],[-20,20],{easing:Easing.linear})}px) scale(${interpolate(heroProg,[0,1],[1,1.04],{easing:Easing.linear})})`;
-  updateCarousel();
 }
 window.addEventListener('scroll', ()=>{ if(!ticking){ requestAnimationFrame(()=>{onScroll(); ticking=false;}); ticking=true;}}, {passive:true});
-window.addEventListener('resize', ()=>{ measure(); updateCarousel(); });
-window.addEventListener('load', ()=>{ measure(); updateCarousel(); onScroll();});
-measure(); updateCarousel(); onScroll();
+window.addEventListener('resize', ()=>{ measure(); });
+window.addEventListener('load', ()=>{ measure(); centerToIndex(0); onScroll();});
+measure(); centerToIndex(0); onScroll();
 
 // ── YouTube modal logic ──
 const YT_ID='1CtHdq1qA6g';
