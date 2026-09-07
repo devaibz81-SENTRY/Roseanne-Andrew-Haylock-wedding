@@ -523,8 +523,20 @@ const photoFallbacks2 = _fallbackOrig;
 const N = photoFiles.length;
 // dynamic section height so every photo gets scroll time — 24 -> ~436vh
 const sectionEl=document.getElementById('carousel');
-// dwell — longer per photo so you can see it before it whisks (was 14vh/photo → 28vh/photo)
-if(sectionEl){ const h = Math.max(320, 100 + N*28); sectionEl.style.height = h + 'vh'; }
+// dwell — desktop 28vh/photo, mobile 20vh/photo for smoother shorter scroll
+if(sectionEl){
+  const isMob = window.innerWidth < 760;
+  const per = isMob ? 20 : 28;
+  const h = Math.max(320, 100 + N*per);
+  sectionEl.style.height = h + 'vh';
+  // recalc on resize
+  window.addEventListener('resize', ()=>{
+    const mob = window.innerWidth < 760;
+    const p = mob ? 20 : 28;
+    const hh = Math.max(320, 100 + N*p);
+    sectionEl.style.height = hh + 'vh';
+  });
+}
 const seeds = photoFiles.map((_,i)=> `wedding-${String(i+1).padStart(2,'0')}-${i}`);
 for(let i=0;i<photoFiles.length;i++){
   const src=photoFiles[i];
@@ -638,23 +650,19 @@ function updateCarousel(){
   // activeIdx now driven by visual center in render() — not pLinear — so focus follows the card coming forward
 }
 
-// Remotion-style per-card 3D + blur — driven by distance from viewport center
-// FIX: blur timing — incoming (forward) card de-blurs BEFORE center so focus feels predictive
+// Clean + smooth — desktop keeps subtle 3D, mobile is flat & fast with minimal blur
 function render(){
-  // slower lerp so photo lingers before it whisks
-  const lerp=0.08;
+  const vw=viewport.clientWidth;
+  const isMobile = vw < 760;
+  const lerp = isMobile ? 0.14 : 0.08;
   currentX += (targetX - currentX) * lerp;
   if(Math.abs(targetX - currentX) < 0.08) currentX=targetX;
   track.style.transform=`translate3d(${-currentX.toFixed(2)}px,0,0)`;
-  // update progress bar here from scroll p (keeps bar in sync)
   progress.style.width=(_pForBar*100).toFixed(2)+'%';
   dot.style.opacity=_pLinearForBar>0.01?'1':'0';
   dot.style.left=`calc(${ (_pForBar*100).toFixed(2)}% - 3px)`;
 
-  // per-card 3D spin + blur
-  const vw=viewport.clientWidth;
-  const center= currentX + vw/2; // track-space center
-  // find visually-closest card to center — this is the true focus as it comes forward
+  const center= currentX + vw/2;
   let bestIdx=0, bestDist=Infinity;
   for(let k=0;k<cards.length;k++){
     const ck=cards[k].offsetLeft + cards[k].offsetWidth/2;
@@ -663,53 +671,59 @@ function render(){
   }
   if(bestIdx!==activeIdx){
     activeIdx=bestIdx;
-    counter.textContent=String(bestIdx+1).padStart(2,'0');
-    caption.textContent=`${String(bestIdx+1).padStart(2,'0')} / ${String(photoFiles.length).padStart(2,'0')}`;
+    if(counter) counter.textContent=String(bestIdx+1).padStart(2,'0');
+    if(caption) caption.textContent=`${String(bestIdx+1).padStart(2,'0')} / ${String(photoFiles.length).padStart(2,'0')}`;
     dots.forEach((d,i)=> d.classList.toggle('active', i===bestIdx));
   }
   cards.forEach((card,i)=>{
-    // card center in track space
     const left=card.offsetLeft;
     const w=card.offsetWidth;
     const c= left + w/2;
-    const dist= c - center; // negative = left of center, positive = right
+    const dist= c - center;
     const absDist=Math.abs(dist);
-
-    // Remotion interpolate: distance -> rotateY, scale, blur, opacity, brightness, saturate
-    // rotateY: far left +22deg (face in), center 0, far right -22deg — like carousel spin
-    const rotY=interpolate(dist, [-vw*0.55, 0, vw*0.55], [22, 0, -22], {extrapolateLeft:'clamp', extrapolateRight:'clamp', easing:Easing.inOut(Easing.quad)});
-    // subtle tilt X for depth
-    const rotX=interpolate(absDist, [0, vw*0.50], [0, -2], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
-    // scale 200% with overlap — center pops huge, edges shrink but still large (mobile: gentler)
-    const isMobile = vw < 760;
-    const scale=interpolate(absDist, [0, vw*0.42], [isMobile ? 1.08 : 1.22, isMobile ? 0.92 : 0.88], {extrapolateLeft:'clamp', extrapolateRight:'clamp', easing:Easing.out(Easing.quad)});
-    // ONLY at the ends — middle stays razor sharp (user: "blur only when it gets to the ends")
-    // hold 0 blur to 0.52vw (~700px from center), then gentle ramp so only furthest 1-2 cards soften
-    let blur;
-    if(dist > 0){
-      blur=interpolate(absDist, [vw*0.52, vw*0.82], [0, 5], {extrapolateLeft:'clamp', extrapolateRight:'clamp', easing:Easing.out(Easing.quad)});
-    } else {
-      blur=interpolate(absDist, [vw*0.54, vw*0.84], [0, 5], {extrapolateLeft:'clamp', extrapolateRight:'clamp', easing:Easing.inOut(Easing.quad)});
-    }
-    // keep brightness/saturation subtle — only furthest desaturate/dim
-    const bright = interpolate(absDist, [0, vw*0.68], [1.02, 0.86], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
-    const sat = interpolate(absDist, [0, vw*0.72], [1, 0.76], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
-    const op=interpolate(absDist, [0, vw*0.78], [1, 0.62], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
-
     const isActive = i===activeIdx;
-    // 200% overlap — active lifts forward and scales, neighbors overlap behind
-    const overlap = interpolate(absDist, [0, vw*0.42], [0, -42], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
-    const z= isActive ? 42 : interpolate(absDist, [0, vw*0.50], [32, -28], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
 
-    card.style.transform=`translateZ(${z.toFixed(1)}px) translateX(${overlap.toFixed(1)}px) rotateY(${rotY.toFixed(2)}deg) rotateX(${rotX.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
-    card.style.filter=`saturate(${sat.toFixed(2)}) brightness(${bright.toFixed(2)}) blur(${blur.toFixed(2)}px)`;
+    let rotY, rotX, scale, blur, bright, sat, op, overlap, z;
+    if(isMobile){
+      // Mobile: flat, no spin, very subtle scale, almost no blur
+      rotY=0; rotX=0;
+      scale=interpolate(absDist, [0, vw*0.55], [1, 0.94], {extrapolateLeft:'clamp', extrapolateRight:'clamp', easing:Easing.out(Easing.quad)});
+      blur=interpolate(absDist, [vw*0.68, vw*0.90], [0, 1.2], {extrapolateLeft:'clamp', extrapolateRight:'clamp', easing:Easing.out(Easing.quad)});
+      bright=interpolate(absDist, [0, vw*0.75], [1, 0.96], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+      sat=interpolate(absDist, [0, vw*0.80], [1, 0.92], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+      op=interpolate(absDist, [0, vw*0.85], [1, 0.70], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+      overlap=interpolate(absDist, [0, vw*0.42], [0, -12], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+      z = isActive ? 6 : interpolate(absDist, [0, vw*0.50], [4, -4], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+      card.style.transform=`translateX(${overlap.toFixed(1)}px) scale(${scale.toFixed(3)})`;
+      // skip blur when negligible for GPU
+      if(blur < 0.15){
+        card.style.filter=`saturate(${sat.toFixed(2)}) brightness(${bright.toFixed(2)})`;
+      } else {
+        card.style.filter=`saturate(${sat.toFixed(2)}) brightness(${bright.toFixed(2)}) blur(${blur.toFixed(2)}px)`;
+      }
+    } else {
+      rotY=interpolate(dist, [-vw*0.55, 0, vw*0.55], [22, 0, -22], {extrapolateLeft:'clamp', extrapolateRight:'clamp', easing:Easing.inOut(Easing.quad)});
+      rotX=interpolate(absDist, [0, vw*0.50], [0, -2], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+      scale=interpolate(absDist, [0, vw*0.42], [1.22, 0.88], {extrapolateLeft:'clamp', extrapolateRight:'clamp', easing:Easing.out(Easing.quad)});
+      if(dist > 0){
+        blur=interpolate(absDist, [vw*0.52, vw*0.82], [0, 3.5], {extrapolateLeft:'clamp', extrapolateRight:'clamp', easing:Easing.out(Easing.quad)});
+      } else {
+        blur=interpolate(absDist, [vw*0.54, vw*0.84], [0, 3.5], {extrapolateLeft:'clamp', extrapolateRight:'clamp', easing:Easing.inOut(Easing.quad)});
+      }
+      bright = interpolate(absDist, [0, vw*0.68], [1.02, 0.88], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+      sat = interpolate(absDist, [0, vw*0.72], [1, 0.80], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+      op=interpolate(absDist, [0, vw*0.78], [1, 0.62], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+      overlap = interpolate(absDist, [0, vw*0.42], [0, -42], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+      z= isActive ? 42 : interpolate(absDist, [0, vw*0.50], [32, -28], {extrapolateLeft:'clamp', extrapolateRight:'clamp'});
+      card.style.transform=`translateZ(${z.toFixed(1)}px) translateX(${overlap.toFixed(1)}px) rotateY(${rotY.toFixed(2)}deg) rotateX(${rotX.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+      card.style.filter=`saturate(${sat.toFixed(2)}) brightness(${bright.toFixed(2)}) blur(${blur.toFixed(2)}px)`;
+    }
     card.style.opacity=op.toFixed(3);
     card.style.zIndex= String(100 - Math.round(absDist/8));
-    // pure photo: no border, just deeper shadow for active — elegant on black
-    card.style.boxShadow = isActive ? '0 36px 100px rgba(0,0,0,.78), 0 0 0 1px rgba(201,164,106,.30), 0 0 40px rgba(201,164,106,.10)' : '0 18px 54px rgba(0,0,0,.48)';
+    card.style.boxShadow = isActive ? '0 24px 60px rgba(0,0,0,.55), 0 0 0 1px rgba(201,164,106,.18)' : '0 12px 32px rgba(0,0,0,.38)';
     card.classList.toggle('is-active', isActive);
     const img=card.querySelector('img');
-    if(img){ img.style.transform = isActive ? 'scale(1.08)' : `scale(${interpolate(absDist,[0,vw*0.5],[1.06,1.02],{extrapolateLeft:'clamp', extrapolateRight:'clamp'}).toFixed(3)})`; }
+    if(img){ img.style.transform = isActive ? 'scale(1.04)' : `scale(${interpolate(absDist,[0,vw*0.5],[1.03,1.01],{extrapolateLeft:'clamp', extrapolateRight:'clamp'}).toFixed(3)})`; }
   });
 
   requestAnimationFrame(render);
