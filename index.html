@@ -155,6 +155,11 @@
   .carousel-dots button.active{width:18px;background:var(--gold);box-shadow:0 2px 10px rgba(201,164,106,.45)}
   .carousel-hint{position:absolute;right:32px;bottom:16px;background:rgba(255,251,245,.92);color:var(--ink);border-radius:999px;padding:7px 12px;font-size:11px;letter-spacing:.06em;display:flex;gap:8px;align-items:center;z-index:4;border:1px solid rgba(233,224,211,.9);box-shadow:0 8px 24px rgba(0,0,0,.18)}
   .carousel-hint i{width:18px;height:18px;border-radius:50%;background:var(--gold);display:grid;place-items:center;color:var(--ink);font-style:normal;font-size:10px;font-weight:700}
+  .carousel-nav{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);display:flex;justify-content:space-between;align-items:center;padding:0 14px;z-index:5;pointer-events:none}
+  .carousel-nav__btn{pointer-events:auto;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:rgba(15,15,15,.72);backdrop-filter:blur(10px);color:#FFFBF5;font-size:20px;line-height:1;display:grid;place-items:center;cursor:pointer;transition:.2s;box-shadow:0 8px 24px rgba(0,0,0,.28)}
+  .carousel-nav__btn:active{transform:scale(.96)}
+  .carousel-nav__btn:disabled{opacity:.35;pointer-events:none}
+  @media(min-width:761px){ .carousel-nav{display:none} }
   #carouselDebug{position:absolute;left:32px;bottom:16px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,251,245,.55);font-family:'IBM Plex Mono',monospace;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);padding:7px 10px;border-radius:999px;z-index:4;backdrop-filter:blur(8px)}
   @media(max-width:760px){
     .carousel-section{height:340vh}
@@ -324,6 +329,10 @@
       <div class="carousel-dots" id="carouselDots" aria-label="Go to photo"></div>
       <div id="carouselDebug">Scroll ↓ — 3D spin + Remotion blur</div>
       <div class="carousel-hint"><i>↔</i> Scroll to spin</div>
+      <div class="carousel-nav" id="carouselNav" aria-label="Photo navigation">
+        <button class="carousel-nav__btn carousel-nav__btn--prev" id="carouselPrev" aria-label="Previous photo">‹</button>
+        <button class="carousel-nav__btn carousel-nav__btn--next" id="carouselNext" aria-label="Next photo">›</button>
+      </div>
     </div>
   </div>
 </section>
@@ -740,6 +749,31 @@ dots.forEach(b=>{
     window.scrollTo({top: targetTop, behavior:'smooth'});
   });
 });
+// next/prev buttons — mobile fallback when scroll/swipe is janky
+(function addNavButtons(){
+  const prev=document.getElementById('carouselPrev');
+  const next=document.getElementById('carouselNext');
+  if(!prev || !next) return;
+  function goTo(i){
+    const n=photoFiles.length;
+    const clamped=Math.max(0,Math.min(n-1,i));
+    const total=section.offsetHeight - window.innerHeight;
+    const top=section.offsetTop + (clamped/(n-1))*total;
+    window.scrollTo({top, behavior:'smooth'});
+    measure();
+    const p = n>1 ? clamped/(n-1) : 0;
+    targetX = p * maxScroll;
+  }
+  prev.addEventListener('click', ()=> goTo(activeIdx-1));
+  next.addEventListener('click', ()=> goTo(activeIdx+1));
+  function updateDisabled(){
+    prev.disabled = activeIdx===0;
+    next.disabled = activeIdx===photoFiles.length-1;
+  }
+  setInterval(updateDisabled, 320);
+  window.addEventListener('scroll', updateDisabled, {passive:true});
+})();
+
 window.addEventListener('keydown', e=>{
   if(e.key==='ArrowRight' || e.key==='ArrowLeft'){
     const n=photoFiles.length;
